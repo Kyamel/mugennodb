@@ -11,12 +11,12 @@ from app.endpoints import (
 def show_help():
     print("Available commands:")
 
-    print("\nUser Commands:")
-    for cmd, desc in user_endpoints.COMMANDS.items():
-        print(f"  {cmd.ljust(20)} {desc}")
-
     print("\nAdmin Commands:")
     for cmd, desc in db_admin_endpoints.COMMANDS.items():
+        print(f"  {cmd.ljust(20)} {desc}")
+
+    print("\nUser Commands:")
+    for cmd, desc in user_endpoints.COMMANDS.items():
         print(f"  {cmd.ljust(20)} {desc}")
 
     print("\nManga Commands:")

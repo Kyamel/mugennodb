@@ -62,10 +62,10 @@ async def repl():
 
             try:
                 # Route commands to appropriate modules
-                if parts[0] in user_endpoints.COMMANDS:
-                    await user_endpoints.handle_command(db, parts)
-                elif parts[0] in db_admin_endpoints.COMMANDS:
+                if parts[0] in db_admin_endpoints.COMMANDS:
                     await db_admin_endpoints.handle_command(db, parts)
+                elif parts[0] in user_endpoints.COMMANDS:
+                    await user_endpoints.handle_command(db, parts)
                 elif parts[0] in manga_endpoints.COMMANDS:
                     await manga_endpoints.handle_command(db, parts)
                 elif parts[0] in chapter_endpoints.COMMANDS:

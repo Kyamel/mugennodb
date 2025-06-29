@@ -33,7 +33,7 @@ def setup_completer():
 
 async def repl():
     session = PromptSession(
-        history=FileHistory(".repl_history"),
+        history=FileHistory(".repl_history.txt"),
         completer=setup_completer(),
         complete_while_typing=True,
     )

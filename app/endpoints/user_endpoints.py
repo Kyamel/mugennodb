@@ -2,12 +2,13 @@
 from datetime import datetime
 from uuid import uuid4
 from mugennocore.model.user import User
+from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennodb.database.interface.users import get_user_by_id, insert_user
 
 COMMANDS = {"get_user": "Retrieve user by ID", "insert_dummy_user": "Create test user"}
 
 
-async def handle_command(db, parts):
+async def handle_command(db: DatabaseProtocol, parts: list[str]):
     if parts[0] == "get_user":
         user_id = int(parts[1])
         user = await get_user_by_id(db, user_id)

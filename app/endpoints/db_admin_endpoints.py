@@ -1,3 +1,4 @@
+from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennodb.destroy import destroy_database_schema
 from mugennodb.init import create_database_schema
 from mugennodb.populate import populate_database_with_seed
@@ -9,7 +10,7 @@ COMMANDS = {
 }
 
 
-async def handle_command(db, parts: list[str]):
+async def handle_command(db: DatabaseProtocol, parts: list[str]):
     """Dispatches db admin commands from the REPL CLI."""
     if parts[0] == "init_db":
         await create_database_schema(db)

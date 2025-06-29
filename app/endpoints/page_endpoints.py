@@ -2,6 +2,7 @@
 from datetime import datetime
 from uuid import uuid4
 from mugennocore.model.page import Page
+from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennodb.database.interface.pages import (
     get_page_by_chapter_and_number,
     insert_page,
@@ -10,7 +11,7 @@ from mugennodb.database.interface.pages import (
 COMMANDS = {"get_page": "Get specific page", "insert_dummy_page": "Add test page"}
 
 
-async def handle_command(db, parts):
+async def handle_command(db: DatabaseProtocol, parts: list[str]):
     if parts[0] == "get_page":
         chapter_id = int(parts[1])
         pg_number = int(parts[2])

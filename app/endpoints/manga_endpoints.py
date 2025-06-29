@@ -2,6 +2,7 @@
 from datetime import datetime, date
 from uuid import uuid4
 from mugennocore.model.manga import Manga
+from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennodb.database.interface.mangas import get_manga_by_id, insert_manga
 
 COMMANDS = {
@@ -10,7 +11,7 @@ COMMANDS = {
 }
 
 
-async def handle_command(db, parts):
+async def handle_command(db: DatabaseProtocol, parts: list[str]):
     if parts[0] == "get_manga":
         manga_id = int(parts[1])
         manga = await get_manga_by_id(db, manga_id)

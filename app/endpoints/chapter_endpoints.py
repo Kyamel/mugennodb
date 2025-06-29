@@ -2,6 +2,7 @@
 from datetime import datetime
 from uuid import uuid4
 from mugennocore.model.chapter import Chapter
+from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennodb.database.interface.chapters import (
     get_all_chapters_by_manga_id,
     insert_chapter,
@@ -13,7 +14,7 @@ COMMANDS = {
 }
 
 
-async def handle_command(db, parts):
+async def handle_command(db: DatabaseProtocol, parts: list[str]):
     if parts[0] == "get_chapters":
         manga_id = int(parts[1])
         chapters = await get_all_chapters_by_manga_id(db, manga_id)

@@ -1,0 +1,31 @@
+[project]
+name = "mugennodb"
+version = "0.1.0"
+description = "Database for the Mugen Project"
+authors = [
+    {name = "Kyamel",email = "lcamelo200@gmail.com"}
+]
+license = {text = "GPLv3"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg (>=0.30.0,<0.31.0)",
+    "cryptography (>=45.0.4,<46.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)"
+]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.15.0"
+black = "^25.1.0"
+typer = "^0.16.0"
+prompt-toolkit = "^3.0.51"
+
+
+[tool.poetry.group.docs.dependencies]
+pdoc = "^15.0.4"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

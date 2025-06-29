@@ -116,4 +116,4 @@ node_modules/
 package-lock.json
 
 # App logs
-.replhistory
+.repl_history

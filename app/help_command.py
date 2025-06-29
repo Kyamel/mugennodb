@@ -8,7 +8,7 @@ from app.endpoints import (
 )
 
 
-def show_help():
+def show_help() -> None:
     print("Available commands:")
 
     print("\nAdmin Commands:")

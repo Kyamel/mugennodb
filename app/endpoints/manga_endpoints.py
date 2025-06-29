@@ -11,7 +11,7 @@ COMMANDS = {
 }
 
 
-async def handle_command(db: DatabaseProtocol, parts: list[str]):
+async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if parts[0] == "get_manga":
         manga_id = int(parts[1])
         manga = await get_manga_by_id(db, manga_id)

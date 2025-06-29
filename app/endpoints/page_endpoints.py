@@ -11,7 +11,7 @@ from mugennodb.database.interface.pages import (
 COMMANDS = {"get_page": "Get specific page", "insert_dummy_page": "Add test page"}
 
 
-async def handle_command(db: DatabaseProtocol, parts: list[str]):
+async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if parts[0] == "get_page":
         chapter_id = int(parts[1])
         pg_number = int(parts[2])

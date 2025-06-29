@@ -8,7 +8,7 @@ from mugennodb.database.interface.users import get_user_by_id, insert_user
 COMMANDS = {"get_user": "Retrieve user by ID", "insert_dummy_user": "Create test user"}
 
 
-async def handle_command(db: DatabaseProtocol, parts: list[str]):
+async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if parts[0] == "get_user":
         user_id = int(parts[1])
         user = await get_user_by_id(db, user_id)

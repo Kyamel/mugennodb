@@ -10,7 +10,7 @@ COMMANDS = {
 }
 
 
-async def handle_command(db: DatabaseProtocol, parts: list[str]):
+async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     """Dispatches db admin commands from the REPL CLI."""
     if parts[0] == "init_db":
         await create_database_schema(db)

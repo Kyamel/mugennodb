@@ -3,6 +3,6 @@ repos:
   hooks:
     - id: update-docs
       name: Update documentation
-      entry: poetry run gen-docs
+      entry: poetry run pdoc -o .\docs\pdoc\ mugennodb
       language: system
       files: ^mugennodb/.*\.py$

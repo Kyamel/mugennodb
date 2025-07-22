@@ -117,3 +117,5 @@ package-lock.json
 
 # App logs
 .repl_history.txt
+
+comments_example.sql

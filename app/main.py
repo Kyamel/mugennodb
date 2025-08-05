@@ -2,12 +2,11 @@
 
 # main.py
 import asyncio
-from shlex import shlex
+from shlex import split
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.completion import NestedCompleter, WordCompleter, Completer
 from typing import Dict, List
-import shlex
 
 from app.endpoints import (
     user_endpoints,
@@ -136,7 +135,7 @@ async def repl():
                 help_command.show_help()
                 continue
 
-            parts = shlex.split(cmd_text) # Split command into parts respecting quotes
+            parts = split(cmd_text) # Split command into parts respecting quotes
             if not parts:
                 continue
 

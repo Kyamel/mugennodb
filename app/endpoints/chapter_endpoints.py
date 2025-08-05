@@ -75,9 +75,9 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     elif cmd == "insert_chapter":
         try:
             manga_id = int(args["manga_id"])
-            ch_number = float(args.get("ch_number", 1))
+            ch_number = int(args.get("ch_number", 1))
         except ValueError:
-            print("manga_id must be int and ch_number must be float.")
+            print("manga_id must be int and ch_number must be int.")
             return
 
         title = args.get("title", "Chapter One")

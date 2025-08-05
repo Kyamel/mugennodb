@@ -4,9 +4,21 @@ from mugennodb.init import create_database_schema
 from mugennodb.populate import populate_database_with_seed
 
 COMMANDS = {
-    "init_db": "Run SQL migrations to create or reset the database",
-    "seed_db": "Seed the database with initial test data",
-    "drop_all": "Delete all tables, views, functions, and sequences in the database",
+    "init_db": {
+        "description": "Run SQL migrations to create or reset the database",
+        "args": ["--confirm"],
+        "example": "init_db --confirm",
+    },
+    "seed_db": {
+        "description": "Seed the database with initial test data",
+        "args": ["--sample-size:int?"],
+        "example": "seed_db --sample-size=50",
+    },
+    "drop_all": {
+        "description": "Delete all tables, views, functions, and sequences in the database",
+        "args": ["--confirm"],
+        "example": "drop_all --confirm",
+    },
 }
 
 

@@ -2,9 +2,12 @@
 
 # main.py
 import asyncio
+from shlex import shlex
 from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
+from prompt_toolkit.completion import NestedCompleter, WordCompleter, Completer
+from typing import Dict, List
+import shlex
 
 from app.endpoints import (
     user_endpoints,
@@ -20,17 +23,91 @@ from app import help_command
 db = AsyncPGDatabase(dsn=get_database_dsn())
 
 
+class HybridCompleter(Completer):
+    def __init__(self, commands: Dict[str, Dict]):
+        self.nested = NestedCompleter.from_nested_dict(
+            self._build_nested_structure(commands)
+        )
+        self.positional_args = self._build_positional_args(commands)
+        self.optional_args = self._build_optional_args(commands)
+
+    def _build_nested_structure(self, commands: Dict[str, Dict]) -> Dict:
+        """Build nested structure for commands and positional arguments."""
+        structure = {}
+        for cmd, info in commands.items():
+            args = info.get("args", [])
+            positional = [arg.split(":")[0] for arg in args if not arg.startswith("--")]
+            structure[cmd] = {arg: None for arg in positional}
+        return structure
+
+    def _build_positional_args(self, commands: Dict[str, Dict]) -> Dict[str, List[str]]:
+        """Build dictionary of positional (required) arguments for each command."""
+        positional = {}
+        for cmd, info in commands.items():
+            args = info.get("args", [])
+            positional[cmd] = [arg.split(":")[0] for arg in args if not arg.startswith("--")]
+        return positional
+
+    def _build_optional_args(self, commands: Dict[str, Dict]) -> Dict[str, List[str]]:
+        """Build dictionary of optional arguments (starting with '--') for each command."""
+        optional = {}
+        for cmd, info in commands.items():
+            args = info.get("args", [])
+            optional[cmd] = [arg.split(":")[0] + "=" for arg in args if arg.startswith("--")]
+        return optional
+
+    def get_completions(self, document, complete_event):
+        text = document.text_before_cursor.split()
+
+        if not text:
+            # No input yet: suggest all commands
+            yield from self.nested.get_completions(document, complete_event)
+            return
+
+        cmd = text[0]
+
+        # If unknown command, fallback
+        if cmd not in self.positional_args:
+            yield from self.nested.get_completions(document, complete_event)
+            return
+
+        positional = self.positional_args.get(cmd, [])
+        optional = self.optional_args.get(cmd, [])
+
+        num_args_typed = len(text) - 1  # excluding command itself
+
+        # If still missing positional arguments, only suggest positional args (nested)
+        if num_args_typed < len(positional):
+            yield from self.nested.get_completions(document, complete_event)
+            return
+
+        # All required positional args typed, suggest optional args not used yet
+        used_opts = {arg.split("=")[0] + "=" for arg in text[1:] if arg.startswith("--")}
+        remaining_opts = [opt for opt in optional if opt not in used_opts]
+
+        if remaining_opts:
+            word_completer = WordCompleter(remaining_opts)
+            yield from word_completer.get_completions(document, complete_event)
+
+
 def setup_completer():
-    # Combine all commands from all modules
-    commands = (
-        ["help", "exit", "quit"]
-        + list(user_endpoints.COMMANDS.keys())
-        + list(manga_endpoints.COMMANDS.keys())
-        + list(chapter_endpoints.COMMANDS.keys())
-        + list(page_endpoints.COMMANDS.keys())
-        + list(db_admin_endpoints.COMMANDS.keys())
+    all_commands = {
+        **user_endpoints.COMMANDS,
+        **manga_endpoints.COMMANDS,
+        **chapter_endpoints.COMMANDS,
+        **page_endpoints.COMMANDS,
+        **db_admin_endpoints.COMMANDS,
+    }
+
+    all_commands.update(
+        {
+            "help": {"description": "Show help", "args": []},
+            "exit": {"description": "Exit the REPL", "args": []},
+            "quit": {"description": "Exit the REPL", "args": []},
+        }
     )
-    return WordCompleter(commands, ignore_case=True)
+
+    return HybridCompleter(all_commands)
 
 
 async def repl():
@@ -58,7 +135,7 @@ async def repl():
                 help_command.show_help()
                 continue
 
-            parts = cmd.split()
+            parts = shlex.split(cmd_text) # Split command into parts respecting quotes
             if not parts:
                 continue
 

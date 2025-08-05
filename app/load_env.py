@@ -20,7 +20,7 @@ def get_env_var(
 # Função para gerar o DSN do banco de dados
 def get_database_dsn() -> str:
     user = get_env_var("DB_USER", default="postgres")
-    password = get_env_var("DB_PASSWORD")
+    password = get_env_var("DB_PASSWORD", default="postgres")
     name = get_env_var("DB_NAME", default="mugen")
     host = get_env_var("DB_HOST", default="localhost")
     port = get_env_var("DB_PORT", default="5432")

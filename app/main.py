@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # main.py
 import asyncio
 from prompt_toolkit import PromptSession

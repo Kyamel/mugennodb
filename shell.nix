@@ -22,6 +22,7 @@ pkgs.mkShell {
     export DB_HOST="localhost"
     export DB_PORT="5432"
     export DB_NAME="mugen"
-    echo "Poetry, Python e PostgreSQL prontos. Banco local deve estar rodando."
+    echo "Configure o PostgreSQL v17 com as mesmas variáveis de ambiente, ou altere as variáveis no arquivo .env."
+    echo "Poetry e Python prontos."
   '';
 }

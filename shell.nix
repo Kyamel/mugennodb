@@ -13,7 +13,7 @@ pkgs.mkShell {
   DB_PORT = "5432";
   DB_NAME = "mugen";
 
-  # Habilitar virtualenv no Poetry (recomendado)
+  # Habilitar virtualenv no Poetry (opcional)
   POETRY_VIRTUALENVS_CREATE = "true";
 
   shellHook = ''
@@ -22,7 +22,10 @@ pkgs.mkShell {
     export DB_HOST="localhost"
     export DB_PORT="5432"
     export DB_NAME="mugen"
+
     echo "Configure o PostgreSQL v17 com as mesmas variáveis de ambiente, ou altere as variáveis no arquivo .env."
     echo "Poetry e Python prontos."
+    echo "Python instalado em: $(which python)"
+    echo "Poetry instalado em: $(which poetry)"
   '';
 }

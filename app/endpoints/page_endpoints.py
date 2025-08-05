@@ -11,7 +11,7 @@ COMMANDS = {
     "get_page": {
         "description": "Get specific page by chapter and number",
         "args": ["chapter_id:int", "pg_number:int"],
-        "example": "get_page 10 2",
+        "example": "get_page chapter_id=10 pg_number=2",
     },
     "insert_page": {
         "description": "Add test page with default values",
@@ -21,27 +21,43 @@ COMMANDS = {
 }
 
 
-def parse_optional_flags(parts: list[str]) -> dict[str, str]:
+def parse_key_value_args(parts: list[str]) -> dict[str, str]:
     """
-    Converte partes como ["--chapter_id=1", "--pg_number=2"] em {"chapter_id": "1", "pg_number": "2"}
+    Converte partes como ["chapter_id=1", "--pg_number=2"] em {"chapter_id": "1", "pg_number": "2"}
     """
     args = {}
     for part in parts:
-        if part.startswith("--") and "=" in part:
-            key, value = part[2:].split("=", 1)
+        if "=" in part:
+            key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
 
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
-    if parts[0] == "get_page":
-        if len(parts) < 3:
-            print("Usage: get_page <chapter_id> <pg_number>")
+    if not parts:
+        print("No command provided.")
+        return
+
+    cmd = parts[0]
+    if cmd not in COMMANDS:
+        print(f"Unknown command: {cmd}")
+        return
+
+    args_def = COMMANDS[cmd]["args"]
+    required_keys = [arg.split(":")[0] for arg in args_def if not arg.startswith("--")]
+
+    args = parse_key_value_args(parts[1:])
+
+    # Validar argumentos obrigatórios
+    for key in required_keys:
+        if key not in args:
+            print(f"Missing required argument: {key}")
             return
 
+    if cmd == "get_page":
         try:
-            chapter_id = int(parts[1])
-            pg_number = int(parts[2])
+            chapter_id = int(args["chapter_id"])
+            pg_number = int(args["pg_number"])
         except ValueError:
             print("chapter_id and pg_number must be integers.")
             return
@@ -49,9 +65,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         page = await get_page_by_chapter_and_number(db, chapter_id, pg_number)
         print(page or "Page not found")
 
-    elif parts[0] == "insert_page":
-        args = parse_optional_flags(parts[1:])
-
+    elif cmd == "insert_page":
         try:
             chapter_id = int(args.get("chapter_id", "1"))
             pg_number = int(args.get("pg_number", "1"))

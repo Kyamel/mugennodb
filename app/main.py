@@ -36,7 +36,7 @@ class HybridCompleter(Completer):
         structure = {}
         for cmd, info in commands.items():
             args = info.get("args", [])
-            positional = [arg.split(":")[0] for arg in args if not arg.startswith("--")]
+            positional = [arg.split(":")[0] + "=" for arg in args if not arg.startswith("--")]
             structure[cmd] = {arg: None for arg in positional}
         return structure
 
@@ -45,7 +45,7 @@ class HybridCompleter(Completer):
         positional = {}
         for cmd, info in commands.items():
             args = info.get("args", [])
-            positional[cmd] = [arg.split(":")[0] for arg in args if not arg.startswith("--")]
+            positional[cmd] = [arg.split(":")[0] + "=" for arg in args if not arg.startswith("--")]
         return positional
 
     def _build_optional_args(self, commands: Dict[str, Dict]) -> Dict[str, List[str]]:
@@ -88,6 +88,7 @@ class HybridCompleter(Completer):
         if remaining_opts:
             word_completer = WordCompleter(remaining_opts)
             yield from word_completer.get_completions(document, complete_event)
+
 
 
 def setup_completer():

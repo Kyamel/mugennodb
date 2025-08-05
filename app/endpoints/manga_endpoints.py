@@ -8,7 +8,7 @@ COMMANDS = {
     "get_manga": {
         "description": "Retrieve manga by ID",
         "args": ["manga_id:int"],
-        "example": "get_manga 789",
+        "example": "get_manga manga_id=789",
     },
     "insert_manga": {
         "description": "Create test manga with optional title args",
@@ -18,27 +18,41 @@ COMMANDS = {
 }
 
 
-def parse_optional_flags(parts: list[str]) -> dict[str, str]:
+def parse_key_value_args(parts: list[str]) -> dict[str, str]:
     """
-    Converte partes como ["--title_english=Bleach", "--mal_id=321"]
-    em {"title_english": "Bleach", "mal_id": "321"}
+    Converte partes como ["manga_id=123", "--title=Bleach"] em {"manga_id": "123", "title": "Bleach"}
     """
     args = {}
     for part in parts:
-        if part.startswith("--") and "=" in part:
-            key, value = part[2:].split("=", 1)
+        if "=" in part:
+            key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
 
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
-    if parts[0] == "get_manga":
-        if len(parts) < 2:
-            print("Usage: get_manga <manga_id>")
+    if not parts:
+        print("No command provided.")
+        return
+
+    cmd = parts[0]
+    if cmd not in COMMANDS:
+        print(f"Unknown command: {cmd}")
+        return
+
+    args_def = COMMANDS[cmd]["args"]
+    required_keys = [arg.split(":")[0] for arg in args_def if not arg.startswith("--")]
+
+    args = parse_key_value_args(parts[1:])
+
+    for key in required_keys:
+        if key not in args:
+            print(f"Missing required argument: {key}")
             return
 
+    if cmd == "get_manga":
         try:
-            manga_id = int(parts[1])
+            manga_id = int(args["manga_id"])
         except ValueError:
             print("manga_id must be an integer.")
             return
@@ -46,9 +60,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         manga = await get_manga_by_id(db, manga_id)
         print(manga or "Manga not found")
 
-    elif parts[0] == "insert_manga":
-        args = parse_optional_flags(parts[1:])
-
+    elif cmd == "insert_manga":
         title_english = args.get("title_english", "Mugen Hero")
         title_native = args.get("title_native", "無限ヒーロー")
 

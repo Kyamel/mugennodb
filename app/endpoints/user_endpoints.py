@@ -9,7 +9,7 @@ COMMANDS = {
     "get_user": {
         "description": "Retrieve user by ID",
         "args": ["user_id:int"],
-        "example": "get_user 101",
+        "example": "get_user user_id=101",
     },
     "insert_user": {
         "description": "Create test user with default values",
@@ -19,26 +19,42 @@ COMMANDS = {
 }
 
 
-def parse_optional_flags(parts: list[str]) -> dict[str, str]:
+def parse_args_key_value(parts: list[str]) -> dict[str, str]:
     """
-    Converte partes como ["--role=admin", "--username=test"] em {"role": "admin", "username": "test"}
+    Converte partes como ["user_id=101", "--role=admin"] em {"user_id": "101", "role": "admin"}
     """
     args = {}
     for part in parts:
-        if part.startswith("--") and "=" in part:
-            key, value = part[2:].split("=", 1)
+        if "=" in part:
+            key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
 
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
-    if parts[0] == "get_user":
-        if len(parts) < 2:
-            print("Usage: get_user <user_id>")
+    if not parts:
+        print("No command provided.")
+        return
+
+    cmd = parts[0]
+    if cmd not in COMMANDS:
+        print(f"Unknown command: {cmd}")
+        return
+
+    args_def = COMMANDS[cmd]["args"]
+    required_keys = [arg.split(":")[0] for arg in args_def if not arg.startswith("--")]
+
+    args = parse_args_key_value(parts[1:])
+
+    # Check required args
+    for key in required_keys:
+        if key not in args:
+            print(f"Missing required argument: {key}")
             return
 
+    if cmd == "get_user":
         try:
-            user_id = int(parts[1])
+            user_id = int(args["user_id"])
         except ValueError:
             print("user_id must be an integer.")
             return
@@ -46,9 +62,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         user = await get_user_by_id(db, user_id)
         print(user or "User not found")
 
-    elif parts[0] == "insert_user":
-        args = parse_optional_flags(parts[1:])
-
+    elif cmd == "insert_user":
         role = args.get("role", "admin")
         username = args.get("username", "admin")
 

@@ -6,18 +6,18 @@ from mugennodb.populate import populate_database_with_seed
 COMMANDS = {
     "init_db": {
         "description": "Run SQL migrations to create or reset the database",
-        "args": ["--confirm"],
-        "example": "init_db --confirm",
+        "args": [],
+        "example": "init_db",
     },
     "seed_db": {
         "description": "Seed the database with initial test data",
-        "args": ["--sample-size:int?"],
-        "example": "seed_db --sample-size=50",
+        "args": [],
+        "example": "seed_db",
     },
     "drop_all": {
         "description": "Delete all tables, views, functions, and sequences in the database",
-        "args": ["--confirm"],
-        "example": "drop_all --confirm",
+        "args": [],
+        "example": "drop_all",
     },
 }
 

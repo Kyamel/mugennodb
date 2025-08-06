@@ -3,7 +3,7 @@
 ## Criar Tabelas
 
 No arquivo:  
-[000_init.sql](./mugennodb/database/migrations/000_init.sql)
+[000_init.sql](../mugennodb/database/migrations/000_init.sql)
 
 Todas as tabelas seguem o padrão `snake_case` e possuem as colunas `created_at` e `updated_at` com preenchimento automático.
 

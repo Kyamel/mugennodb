@@ -1,18 +1,18 @@
-### Database Files Structure
+# Database Files Structure
 
 The `mugennodb/database/` directory contains the project's database layer.
 
-#### Migrations
+## Migrations
 
 All SQL migration files live under:
 
-```
+```plain
 mugennodb/database/migrations/
 ```
 
 Each file is versioned and named following this convention:
 
-```
+```plain
 001_create_users.sql
 002_add_manga_table.sql
 003_update_fansub_relation.sql
@@ -20,11 +20,11 @@ Each file is versioned and named following this convention:
 
 Migrations should be incremental and reflect schema changes over time. The first file typically sets up the base schema.
 
-#### Interfaces
+## Interfaces
 
 Python code responsible for querying the database is located in:
 
-```
+```plain
 mugennodb/database/interface/
 ```
 
@@ -36,11 +36,11 @@ There is **one Python file per database relation (table)**. For example:
 
 These files implement logic using `asyncpg` and should follow the asynchronous code style using `async def`.
 
-#### Auto-generated Schemas
+## Auto-generated Schemas
 
 Generated schemas based on PostgreSQL introspection are placed under:
 
-```
+```plain
 mugennodb/database/autogen/
 ```
 

@@ -9,4 +9,4 @@ async def populate_database_with_seed(db: DatabaseProtocol) -> None:
     with open(SEED_FILE, encoding="utf-8") as f:
         sql = f.read()
         await db.execute_script(sql)
-        print("[✓] Seed applied.")
+        print(f"[✓] Seed applied: {SEED_FILE.split(os.sep)[-1]}")

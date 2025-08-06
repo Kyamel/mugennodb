@@ -19,7 +19,7 @@ To maintain a clean, reviewable, and scalable development workflow, please follo
 - Use clear, concise, and **imperative** messages.
 - Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
 
-  ```
+  ```plain
   <type>(optional scope): <short summary>
   ```
 
@@ -33,7 +33,7 @@ To maintain a clean, reviewable, and scalable development workflow, please follo
 
 ### ✅ Examples
 
-```
+```plain
 feat: add support for asyncpg in manga repository
 fix(user-api): fix race condition in login endpoint
 docs: add pull request guidelines
@@ -49,7 +49,8 @@ docs: add pull request guidelines
 - Use kebab-case and prefix with the purpose:
 
 Examples:
-```
+
+```plain
 feat/add-chapter-model
 fix/login-session-bug
 refactor/repository-structure

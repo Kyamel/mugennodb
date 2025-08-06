@@ -1,15 +1,17 @@
 
 # Coding Guidelines
+
 To maintain a clean, readable, and maintainable codebase, please follow these rules:
 
 ## Index
-  - [File Size](#file-size)
-  - [Type Annotations and Validation](#type-annotations-and-validation)
-  - [Async Style](#async-style)
-  - [Prefer Duck Typing Over ABCs](#prefer-duck-typing-over-abstract-base-classes-abcs)
-    - [Example: ABC (Avoid)](#abc-or-abstract-base-class-avoid)
-    - [Example: Duck Typing (Preferred)](#duck-typing-with-protocols-recommended)
-    - [Example: Duck Typing with dataclasses](#duck-typing-with-dataclasses-and-slots)
+
+- [File Size](#file-size)
+- [Type Annotations and Validation](#type-annotations-and-validation)
+- [Async Style](#async-style)
+- [Prefer Duck Typing Over ABCs](#prefer-duck-typing-over-abstract-base-classes-abcs)
+  - [Example: ABC (Avoid)](#abc-or-abstract-base-class-avoid)
+  - [Example: Duck Typing (Preferred)](#duck-typing-with-protocols-recommended)
+  - [Example: Duck Typing with dataclasses](#duck-typing-with-dataclasses-and-slots)
 
 ---
 
@@ -48,7 +50,6 @@ async def fetch_user(pool, user_id: int) -> dict:
     async with pool.acquire() as conn:
         return await conn.fetchrow("SELECT * FROM users WHERE id = $1", user_id)
 ```
-
 
 ## Prefer Duck Typing Over Abstract Base Classes (ABCs)
 

@@ -134,4 +134,4 @@ Para cada nova tabela no banco de dados, seguir o fluxo:
 - Manter consistência entre nomes de tabelas, models e interfaces
 - Documentar todas as funções com docstrings
 - Implementar testes unitários para cada camada
-- testar com o comando `mypy .` para buscar por erros de tipagem antes de fazer pull request.
+- testar com o comando `poetry run mypy .` para buscar por erros de tipagem antes de fazer pull request.

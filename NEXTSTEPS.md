@@ -2,7 +2,7 @@
 
 ## Referência Principal
 
-Sempre consulte o [Database Model](../docs/DATABASE_MODEL.md) como referência para a estrutura do banco de dados.
+Sempre consulte o [Database Model](./docs/DATABASE_MODEL.md) como referência para a estrutura do banco de dados.
 
 ## Padrão de Implementação
 

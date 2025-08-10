@@ -87,4 +87,18 @@ BEFORE UPDATE ON pages
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+-- Table tags
+CREATE TABLE IF NOT EXISTS tags (
+    id SERIAL PRIMARY KEY,
+    tag_name VARCHAR(128) NOT NULL UNIQUE,
+    tag_type VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER set_tags_updated_at
+BEFORE UPDATE ON tags
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
 -- Relationships

@@ -4,6 +4,7 @@ from app.endpoints import (
     chapter_endpoints,
     page_endpoints,
     db_admin_endpoints,
+    tag_endpoints,
 )
 
 
@@ -31,6 +32,7 @@ def show_help() -> None:
     print_command_section("Manga Commands", manga_endpoints.COMMANDS, GREEN)
     print_command_section("Chapter Commands", chapter_endpoints.COMMANDS, GREEN)
     print_command_section("Page Commands", page_endpoints.COMMANDS, GREEN)
+    print_command_section("Tag Commands", tag_endpoints.COMMANDS, GREEN)
 
     print(f"\n{GREEN}General Commands:{RESET}")
     print(f"  {BLUE}help".ljust(20) + f"{RESET}Show this help message")

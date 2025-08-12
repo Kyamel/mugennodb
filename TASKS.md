@@ -4,9 +4,9 @@
 
 | Tabela                        | Status    | Responsável | Observações                     |
 |-------------------------------|-----------|-------------|---------------------------------|
-| `users`                       |     🟡    |   CAMELO    | Depende de `counties`           |
-| `mangas`                      |     🟡    |   CAMELO    | Depende de `counties`           |
-| `chapters`                    |     🟡    |   CAMELO    | Depende de `counties`           |
+| `users`                       |     🟡    |   CAMELO    | Depende de `countries`          |
+| `mangas`                      |     🟡    |   CAMELO    | Depende de `countries`          |
+| `chapters`                    |     🟡    |   CAMELO    | Depende de `countires`          |
 | `pages`                       |     🟢    |   CAMELO    |                                 |
 | `tags`                        |     🟢    |   LEME      |                                 |
 | `countries`                   |     ⚪    |             |                                 |

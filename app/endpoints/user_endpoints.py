@@ -21,7 +21,7 @@ COMMANDS = {
 
 def parse_args_key_value(parts: list[str]) -> dict[str, str]:
     """
-    Converte partes como ["user_id=101", "--role=admin"] em {"user_id": "101", "role": "admin"}
+    Converts parts ["user_id=101", "--role=admin"] in {"user_id": "101", "role": "admin"}
     """
     args = {}
     for part in parts:

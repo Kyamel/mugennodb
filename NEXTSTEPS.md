@@ -105,8 +105,12 @@ Para cada nova tabela criada no banco de dados em `000_init.sql`, seguir o fluxo
     Exemplo:  
 
      ```python
-        from mugennodb.interfaces.user import insert_user
-        from mugennocore.interfaces.user import IUser
+        from datetime import datetime
+        from uuid import uuid4
+        from mugennocore.model.user import User
+        from mugennodb.conection.database_protocol import DatabaseProtocol
+        from mugennodb.database.interface.users import insert_user
+
 
         COMMANDS = {
             "insert_user": {

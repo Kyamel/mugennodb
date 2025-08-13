@@ -15,6 +15,7 @@ from app.endpoints import (
     page_endpoints,
     db_admin_endpoints,
     tag_endpoints,
+    country_endpoints,
 )
 from app.load_env import get_database_dsn
 from mugennodb.conection.asyncpg_database import AsyncPGDatabase
@@ -99,6 +100,7 @@ def setup_completer():
         **page_endpoints.COMMANDS,
         **db_admin_endpoints.COMMANDS,
         **tag_endpoints.COMMANDS,
+        **country_endpoints.COMMANDS,
     }
 
     all_commands.update(
@@ -155,6 +157,8 @@ async def repl():
                     await page_endpoints.handle_command(db, parts)
                 elif parts[0] in tag_endpoints.COMMANDS:
                     await tag_endpoints.handle_command(db, parts)
+                elif parts[0] in country_endpoints.COMMANDS:
+                    await country_endpoints.handle_command(db, parts)
                 else:
                     print("Invalid command. Type 'help' for available commands.")
 

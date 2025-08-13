@@ -9,7 +9,7 @@
 | `chapters`                    |     🟡    |   CAMELO    | Depende de `countires`          |
 | `pages`                       |     🟢    |   CAMELO    |                                 |
 | `tags`                        |     🟢    |   LEME      |                                 |
-| `countries`                   |     ⚪    |             |                                 |
+| `countries`                   |     ⚪    |   LEME      |                                 |
 
 ## Tabelas de Relacionamento
 

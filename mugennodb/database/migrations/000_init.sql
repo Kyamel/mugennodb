@@ -101,4 +101,18 @@ BEFORE UPDATE ON tags
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+-- Table countries
+CREATE TABLE IF NOT EXISTS countries (
+    id SERIAL PRIMARY KEY,
+    lang VARCHAR(10) NOT NULL,
+    locale_code VARCHAR(10) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER set_countries_updated_at
+BEFORE UPDATE ON countries
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
 -- Relationships

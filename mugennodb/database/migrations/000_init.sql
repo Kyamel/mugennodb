@@ -116,3 +116,35 @@ FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
 -- Relationships
+
+-- Table related_mangas (Junction table for Manga to Manga relationship)
+CREATE TABLE IF NOT EXISTS related_mangas (
+    id SERIAL PRIMARY KEY,
+    source_manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    related_manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    relationship_type VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT unique_manga_relation UNIQUE (source_manga_id, related_manga_id, relationship_type),
+    CONSTRAINT check_manga_not_self CHECK (source_manga_id <> related_manga_id)
+);
+
+CREATE TRIGGER set_related_mangas_updated_at
+BEFORE UPDATE ON related_mangas
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+-- Table manga_genres (Junction table for Manga to Tag relationship)
+CREATE TABLE IF NOT EXISTS manga_genres (
+    id SERIAL PRIMARY KEY,
+    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT unique_manga_genre UNIQUE (manga_id, tag_id)
+);
+
+CREATE TRIGGER set_manga_genres_updated_at
+BEFORE UPDATE ON manga_genres
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();

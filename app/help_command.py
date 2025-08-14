@@ -5,6 +5,7 @@ from app.endpoints import (
     page_endpoints,
     db_admin_endpoints,
     tag_endpoints,
+    country_endpoints,
 )
 
 
@@ -33,6 +34,7 @@ def show_help() -> None:
     print_command_section("Chapter Commands", chapter_endpoints.COMMANDS, GREEN)
     print_command_section("Page Commands", page_endpoints.COMMANDS, GREEN)
     print_command_section("Tag Commands", tag_endpoints.COMMANDS, GREEN)
+    print_command_section("Country Commands", country_endpoints.COMMANDS, GREEN)
 
     print(f"\n{GREEN}General Commands:{RESET}")
     print(f"  {BLUE}help".ljust(20) + f"{RESET}Show this help message")

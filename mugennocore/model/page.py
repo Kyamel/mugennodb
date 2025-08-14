@@ -13,10 +13,6 @@ class Page:
     created_at: datetime
     updated_at: datetime
 
-    # Campos opcionais para UI/exibição, se quiser manter:
-    img_url: Optional[str] = None
-    img_binary: Optional[bytes] = None
-
     def __str__(self) -> str:
         return (
             f"Page {self.pg_number} (Chapter {self.chapter_id}) - Source: {self.source}"

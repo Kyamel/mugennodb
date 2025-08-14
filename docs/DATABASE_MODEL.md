@@ -91,15 +91,8 @@ Rastreamento de leitura.
 
 ### reviews
 
-Objeto de avaliação.
+Usuário que escreveu a review e seu conteúdo.
 
-* id (PK)
-
-### users_reviews
-
-Usuário que escreveu review.
-
-* id (PK)
 * user_id (FK)
 * review_id (FK)
 * score

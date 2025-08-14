@@ -17,7 +17,6 @@
 |-------------------------------|-----------|-------------|---------------------------------|
 | `read (users_mangas)`         |     ⚪    |             |                                 |
 | `reviews`                     |     ⚪    |             |                                 |
-| `users_reviews`               |     ⚪    |             |                                 |
 | `chapters_reviews`            |     ⚪    |             |                                 |
 | `mangas_reviews`              |     ⚪    |             |                                 |
 | `pages_reviews`               |     ⚪    |             |                                 |

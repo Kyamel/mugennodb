@@ -1,23 +1,23 @@
-# Próximos passos
+# Next Steps
 
-## Criar Tabelas
+## Create Tables
 
-No arquivo:  
+In the file:
 [000_init.sql](../mugennodb/database/migrations/000_init.sql)
 
-Todas as tabelas seguem o padrão `snake_case` e possuem as colunas `created_at` e `updated_at` com preenchimento automático.
+All tables follow the `snake_case` naming convention and have `created_at` and `updated_at` columns with automatic timestamps.
 
 ### users
 
-Armazena dados de conta dos usuários.
+Stores user account data.
 
 * id (PK)
-* country_id (FK)  -- linguagem principal do usuário.
+* country_id (FK)  -- main language of the user.
 * user_name (login)
-* user_password (senha)
-* user_role (admin, comum...)
+* user_password (password)
+* user_role (admin, regular...)
 * join_date
-* email (único)
+* email (unique)
 * is_banned
 * nickname
 * user_profile (UUID)
@@ -28,10 +28,10 @@ Armazena dados de conta dos usuários.
 
 ### mangas
 
-Dados de obras (mangás, manhwas, etc).
+Information about works (mangas, manhwas, etc).
 
 * id (PK)
-* country_id (FK) -- país de origem.
+* country_id (FK) -- country of origin.
 * title_english
 * title_native
 * release_date
@@ -39,51 +39,51 @@ Dados de obras (mangás, manhwas, etc).
 * active_status (ongoing, finished...)
 * comic_type (manga, manhwa...)
 * cover (UUID)
-* mal_id (único)
+* mal_id (unique)
 * rating (G, PG, R...)
 
 ### chapters
 
-Capítulos de mangás.
+Chapters of mangas.
 
 * id (PK)
 * manga_id (FK)
-* country_id (FK) -- tradução.
+* country_id (FK) -- translation language.
 * title
 * cover (UUID)
-* ch_number (único por manga)
+* ch_number (unique per manga)
 
 ### pages
 
-Páginas de um capítulo.
+Pages of a chapter.
 
 * id (PK)
 * chapter_id (FK)
-* pg_number (único por capítulo)
-* source (UUID) --link para a imagem.
+* pg_number (unique per chapter)
+* source (UUID) -- link to the image.
 
 ### tags
 
-Tags e gêneros.
+Tags and genres.
 
 * id (PK)
-* type (gênero, tema...)
+* type (genre, theme...)
 * name
 
 ### countries
 
-Idiomas ou locais.
+Languages or locations.
 
 * id (PK)
 * locale_code (pt-BR, en-US...)
 
 ---
 
-## Relacionamentos
+## Relationships
 
 ### read (users_mangas)
 
-Rastreamento de leitura.
+Reading tracking.
 
 * user_id (FK)
 * manga_id (FK)
@@ -91,7 +91,7 @@ Rastreamento de leitura.
 
 ### reviews
 
-Usuário que escreveu a review e seu conteúdo.
+User who wrote the review and its content.
 
 * review_id (PK)
 * user_id (FK)
@@ -100,28 +100,28 @@ Usuário que escreveu a review e seu conteúdo.
 
 ### chapters_reviews
 
-Review de capítulo.
+Chapter review.
 
 * review_id (FK)
 * chapter_id (FK)
 
 ### mangas_reviews
 
-Review de mangá.
+Manga review.
 
 * review_id (FK)
 * manga_id (FK)
 
 ### pages_reviews
 
-Review de página.
+Page review.
 
 * review_id (FK)
 * page_id (FK)
 
 ### related (mangas_mangas)
 
-Relacionamentos entre mangás.
+Relationships between mangas.
 
 * manga_id (FK)
 * related_manga_id (FK)
@@ -129,16 +129,16 @@ Relacionamentos entre mangás.
 
 ### genre (mangas_tags)
 
-Relaciona mangás com gêneros.
+Associates mangas with genres.
 
 * manga_id (FK)
 * tag_id (FK)
 
 ### localized (mangas_countries)
 
-Tradução de sinopses.
+Translation of synopses.
 
 * manga_id (FK)
 * country_id (FK)
-* sinopse (texto traduzido)
-* sinopse_embed (vetor NLP) --busca semântica
+* synopsis (translated text)
+* synopsis_embed (NLP vector) -- semantic search

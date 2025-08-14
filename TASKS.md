@@ -18,8 +18,8 @@
 | `read (users_mangas)`         |     ⚪    |             |                                 |
 | `reviews`                     |     ⚪    |             |                                 |
 | `chapters_reviews`            |     ⚪    |             |                                 |
-| `mangas_reviews`              |     ⚪    |             |                                 |
-| `pages_reviews`               |     ⚪    |             |                                 |
+| `mangas_reviews`              |     ⚪    |    PEDRO    |                                 |
+| `pages_reviews`               |     ⚪    |    PEDRO    |                                 |
 | `related (mangas_mangas)`     |     🟡    |    LEME     |                                 |
 | `genre (mangas_tags)`         |     🟡    |    LEME     |                                 |
 | `localized (mangas_countries)`|     🟡    |    LEME     |                                 |

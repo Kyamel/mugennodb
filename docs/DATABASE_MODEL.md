@@ -93,8 +93,8 @@ Rastreamento de leitura.
 
 Usuário que escreveu a review e seu conteúdo.
 
+* review_id (PK)
 * user_id (FK)
-* review_id (FK)
 * score
 * content
 

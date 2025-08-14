@@ -6,6 +6,8 @@ from app.endpoints import (
     db_admin_endpoints,
     tag_endpoints,
     country_endpoints,
+    related_manga_endpoints,
+    manga_genre_endpoints,
 )
 
 
@@ -35,6 +37,8 @@ def show_help() -> None:
     print_command_section("Page Commands", page_endpoints.COMMANDS, GREEN)
     print_command_section("Tag Commands", tag_endpoints.COMMANDS, GREEN)
     print_command_section("Country Commands", country_endpoints.COMMANDS, GREEN)
+    print_command_section("Related Manga Commands", related_manga_endpoints.COMMANDS, GREEN)
+    print_command_section("Manga Genre Commands", manga_genre_endpoints.COMMANDS, GREEN)
 
     print(f"\n{GREEN}General Commands:{RESET}")
     print(f"  {BLUE}help".ljust(20) + f"{RESET}Show this help message")

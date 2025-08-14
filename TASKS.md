@@ -9,7 +9,7 @@
 | `chapters`                    |     🟡    |   CAMELO    | Depende de `countires`          |
 | `pages`                       |     🟢    |   CAMELO    |                                 |
 | `tags`                        |     🟢    |   LEME      |                                 |
-| `countries`                   |     ⚪    |   LEME      |                                 |
+| `countries`                   |     🟢    |   LEME      |                                 |
 
 ## Tabelas de Relacionamento
 
@@ -21,9 +21,9 @@
 | `chapters_reviews`            |     ⚪    |             |                                 |
 | `mangas_reviews`              |     ⚪    |             |                                 |
 | `pages_reviews`               |     ⚪    |             |                                 |
-| `related (mangas_mangas)`     |     ⚪    |             |                                 |
-| `genre (mangas_tags)`         |     ⚪    |             |                                 |
-| `localized (mangas_countries)`|     ⚪    |             |                                 |
+| `related (mangas_mangas)`     |     🟡    |    LEME     |                                 |
+| `genre (mangas_tags)`         |     🟡    |    LEME     |                                 |
+| `localized (mangas_countries)`|     🟡    |    LEME     |                                 |
 
 ## Legenda de Status
 

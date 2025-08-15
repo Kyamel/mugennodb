@@ -16,7 +16,7 @@
 | Tabela                        | Status    | Responsável | Observações                     |
 |-------------------------------|-----------|-------------|---------------------------------|
 | `read (users_mangas)`         |     🟡    |    EMERSON  |                                 |
-| `reviews`                     |     🟡    |    EMERSON  |                                 |
+| `reviews`                     |     🟢    |    EMERSON  |                                 |
 | `chapters_reviews`            |     ⚪    |             |                                 |
 | `mangas_reviews`              |     🟡    |    PEDRO    |                                 |
 | `pages_reviews`               |     🟡    |    PEDRO    |                                 |

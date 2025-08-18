@@ -19,6 +19,7 @@ from app.endpoints import (
     related_manga_endpoints,
     manga_genre_endpoints,
     review_endpoints,
+    read_endpoints,
 )
 from app.load_env import get_database_dsn
 from mugennodb.conection.asyncpg_database import AsyncPGDatabase
@@ -107,6 +108,7 @@ def setup_completer():
         **related_manga_endpoints.COMMANDS,
         **manga_genre_endpoints.COMMANDS,
         **review_endpoints.COMMANDS,
+        **read_endpoints.COMMANDS,
     }
 
     all_commands.update(
@@ -171,6 +173,8 @@ async def repl():
                     await manga_genre_endpoints.handle_command(db, parts)
                 elif parts[0] in review_endpoints.COMMANDS:
                     await review_endpoints.handle_command(db, parts)
+                elif parts[0] in read_endpoints.COMMANDS:   
+                    await read_endpoints.handle_command(db, parts)
                 else:
                     print("Invalid command. Type 'help' for available commands.")
 

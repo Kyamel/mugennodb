@@ -148,3 +148,32 @@ CREATE TRIGGER set_manga_genres_updated_at
 BEFORE UPDATE ON manga_genres
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
+
+-- Table review
+CREATE TABLE IF NOT EXISTS review (
+    review_id SERIAL PRIMARY KEY,
+    users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    score NUMERIC(3,2) NOT NULL CHECK (score >= 0 AND score <= 10),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER set_review_updated_at
+BEFORE UPDATE ON review
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+-- Table chapter_reviews
+CREATE TABLE IF NOT EXISTS chapter_reviews (
+    review_id INT NOT NULL,
+    chapter_id INT NOT NULL,
+    PRIMARY KEY (review_id, chapter_id),
+    FOREIGN KEY (review_id) REFERENCES review(review_id) ON DELETE CASCADE,
+    FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
+);
+
+CREATE TRIGGER set_chapter_reviews_updated_at
+BEFORE UPDATE ON chapter_reviews
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();

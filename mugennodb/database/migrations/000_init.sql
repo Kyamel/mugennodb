@@ -115,6 +115,7 @@ BEFORE UPDATE ON countries
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+
 -- Relationships
 
 -- Table related_mangas (Junction table for Manga to Manga relationship)
@@ -143,8 +144,20 @@ CREATE TABLE IF NOT EXISTS manga_genres (
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     CONSTRAINT unique_manga_genre UNIQUE (manga_id, tag_id)
 );
-
 CREATE TRIGGER set_manga_genres_updated_at
 BEFORE UPDATE ON manga_genres
+
+-- Table read (Junction table for User to Manga relationship - Reading tracking)
+CREATE TABLE IF NOT EXISTS read (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    status VARCHAR(50) NOT NULL DEFAULT 'reading',
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, manga_id)
+);
+
+CREATE TRIGGER set_read_updated_at
+BEFORE UPDATE ON read
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();

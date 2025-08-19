@@ -168,7 +168,7 @@ EXECUTE FUNCTION set_updated_at();
 CREATE TABLE IF NOT EXISTS review (
     review_id SERIAL PRIMARY KEY,
     users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    score NUMERIC(3,2) NOT NULL CHECK (score >= 0 AND score <= 10),
+    score REAL NOT NULL CHECK (score >= 0 AND score <= 10),
     content TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()

@@ -5,7 +5,7 @@ from datetime import datetime
 @runtime_checkable
 class IReview(Protocol):
     review_id: int
-    user_id: int
+    users_id: int
     score: float
     content: str
     created_at: datetime

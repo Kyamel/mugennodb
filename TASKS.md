@@ -17,7 +17,7 @@
 |-------------------------------|-----------|-------------|---------------------------------|
 | `read (users_mangas)`         |     🟢    |    EMERSON  |                                 |
 | `reviews`                     |     🟢    |    EMERSON  |                                 |
-| `chapters_reviews`            |     ⚪    |             |                                 |
+| `chapters_reviews`            |     🟢    |    BRAGA    |                                 |
 | `mangas_reviews`              |     🟡    |    PEDRO    |                                 |
 | `pages_reviews`               |     🟡    |    PEDRO    |                                 |
 | `related (mangas_mangas)`     |     🟡    |    LEME     |                                 |

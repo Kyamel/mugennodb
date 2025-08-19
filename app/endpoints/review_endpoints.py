@@ -48,7 +48,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         review = Review(
             review_id=0,
-            user_id=user_id,
+            users_id=user_id,
             score=score,
             content=content,
             created_at=datetime.now(),

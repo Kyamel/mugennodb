@@ -8,11 +8,11 @@ from mugennocore.model.reviews import Review
 async def insert_review(db: DatabaseProtocol, review: IReview) -> int:
     record = await db.fetchrow(
         """
-        INSERT INTO reviews (user_id, score, content, created_at, updated_at)
+        INSERT INTO review (users_id, score, content, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING review_id
         """,
-        review.user_id,
+        review.users_id,
         review.score,
         review.content,
         review.created_at,
@@ -23,12 +23,12 @@ async def insert_review(db: DatabaseProtocol, review: IReview) -> int:
 
 async def get_review_by_id(db: DatabaseProtocol, review_id: int) -> Optional[Review]:
     record = await db.fetchrow(
-        "SELECT * FROM reviews WHERE review_id = $1",
+        "SELECT * FROM review WHERE review_id = $1",
         review_id
     )
     return record_to_review(record)
 
 
 async def list_reviews(db: DatabaseProtocol) -> list[Review]:
-    records = await db.fetch("SELECT * FROM reviews")
+    records = await db.fetch("SELECT * FROM review")
     return [record_to_review(r) for r in records if r is not None]

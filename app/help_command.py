@@ -8,6 +8,7 @@ from app.endpoints import (
     country_endpoints,
     related_manga_endpoints,
     manga_genre_endpoints,
+    review_endpoints,
 )
 
 
@@ -39,6 +40,7 @@ def show_help() -> None:
     print_command_section("Country Commands", country_endpoints.COMMANDS, GREEN)
     print_command_section("Related Manga Commands", related_manga_endpoints.COMMANDS, GREEN)
     print_command_section("Manga Genre Commands", manga_genre_endpoints.COMMANDS, GREEN)
+    print_command_section("Review", review_endpoints.COMMANDS, GREEN)
 
     print(f"\n{GREEN}General Commands:{RESET}")
     print(f"  {BLUE}help".ljust(20) + f"{RESET}Show this help message")

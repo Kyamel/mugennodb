@@ -146,6 +146,8 @@ CREATE TABLE IF NOT EXISTS manga_genres (
 );
 CREATE TRIGGER set_manga_genres_updated_at
 BEFORE UPDATE ON manga_genres
+FOR EACH ROW 
+EXECUTE FUNCTION set_updated_at();
 
 -- Table read (Junction table for User to Manga relationship - Reading tracking)
 CREATE TABLE IF NOT EXISTS read (

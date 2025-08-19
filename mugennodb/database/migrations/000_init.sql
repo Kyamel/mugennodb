@@ -192,3 +192,18 @@ CREATE TRIGGER set_chapter_reviews_updated_at
 BEFORE UPDATE ON chapter_reviews
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
+
+-- Table manga_reviews (Junction table for Manga to Review relationship)
+CREATE TABLE IF NOT EXISTS manga_reviews (
+    id SERIAL PRIMARY KEY,
+    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    review_id INTEGER NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT unique_manga_review UNIQUE (manga_id, review_id)
+);
+
+CREATE TRIGGER set_manga_reviews_updated_at
+BEFORE UPDATE ON manga_reviews
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();

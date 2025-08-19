@@ -1,8 +1,14 @@
 from datetime import datetime, date
 from uuid import uuid4
 from mugennocore.model.manga import Manga
+from .chapter_endpoints import parse_key_value_args
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.mangas import get_manga_by_id, insert_manga
+from mugennodb.database.interface.mangas import (
+    get_manga_by_id,
+    insert_manga,
+    search_mangas_by_title,
+    get_mangas_by_tag_name,
+)
 
 COMMANDS = {
     "get_manga": {
@@ -15,20 +21,17 @@ COMMANDS = {
         "args": ["--title_english:str?", "--title_native:str?", "--mal_id:int?"],
         "example": "insert_manga --title_english='Bleach' --mal_id=321",
     },
+    "search_manga": {
+        "description": "Busca mangás por título com paginação.",
+        "args": ["title:str", "--limit:int?", "--offset:int?"],
+        "example": "search_manga title=Hero --limit=5",
+    },
+    "filter_by_tag": {
+        "description": "Filtra mangás por tag com paginação.",
+        "args": ["tag:str", "--limit:int?", "--offset:int?"],
+        "example": "filter_by_tag tag=Ação --limit=10",
+    },
 }
-
-
-def parse_key_value_args(parts: list[str]) -> dict[str, str]:
-    """
-    Converte partes como ["manga_id=123", "--title=Bleach"] em {"manga_id": "123", "title": "Bleach"}
-    """
-    args = {}
-    for part in parts:
-        if "=" in part:
-            key, value = part.lstrip("-").split("=", 1)
-            args[key] = value
-    return args
-
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if not parts:
@@ -85,3 +88,39 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         )
         mid = await insert_manga(db, manga)
         print(f"Manga inserted with ID {mid}")
+
+    elif cmd == "search_manga":
+        title = args.get("title")
+        if not title:
+            print("O argumento 'title' é obrigatório.")
+            return
+        
+        limit = int(args.get("limit", 10))
+        offset = int(args.get("offset", 0))
+        
+        mangas = await search_mangas_by_title(db, title, limit, offset)
+        if not mangas:
+            print(f"Nenhum mangá encontrado com o título '{title}'.")
+            return
+        
+        print(f"--- Resultado da busca por '{title}' ---")
+        for m in mangas:
+            print(f"  ID: {m.id} - {m.title_english}")
+
+    elif cmd == "filter_by_tag":
+        tag = args.get("tag")
+        if not tag:
+            print("O argumento 'tag' é obrigatório.")
+            return
+            
+        limit = int(args.get("limit", 10))
+        offset = int(args.get("offset", 0))
+
+        mangas = await get_mangas_by_tag_name(db, tag, limit, offset)
+        if not mangas:
+            print(f"Nenhum mangá encontrado com a tag '{tag}'.")
+            return
+
+        print(f"--- Mangás com a tag '{tag}' ---")
+        for m in mangas:
+            print(f"  ID: {m.id} - {m.title_english}")

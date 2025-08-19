@@ -12,11 +12,31 @@ async def get_manga_by_id(db: DatabaseProtocol, manga_id: int) -> Optional[IMang
     return record_to_manga(row)
 
 
-async def search_mangas_by_title(db: DatabaseProtocol, title: str) -> List[IManga]:
-    rows = await db.fetch(
-        "SELECT * FROM mangas WHERE title_english ILIKE $1 OR title_native ILIKE $1",
-        f"%{title}%",
-    )
+async def search_mangas_by_title(db: DatabaseProtocol, title_query: str, limit: int, offset: int) -> List[IManga]:
+    """Busca mangás por parte do título (case-insensitive) com paginação."""
+    query = """
+        SELECT * FROM mangas
+        WHERE title_english ILIKE $1 OR title_native ILIKE $1
+        ORDER BY title_english
+        LIMIT $2 OFFSET $3
+    """
+    search_term = f"%{title_query}%"
+    rows = await db.fetch(query, search_term, limit, offset)
+    return [manga for row in rows if (manga := record_to_manga(row)) is not None]
+
+
+async def get_mangas_by_tag_name(db: DatabaseProtocol, tag_name: str, limit: int, offset: int) -> List[IManga]:
+    """Filtra mangás por nome da tag (case-insensitive) com paginação."""
+    query = """
+        SELECT m.*
+        FROM mangas m
+        JOIN manga_genres mg ON m.id = mg.manga_id
+        JOIN tags t ON mg.tag_id = t.id
+        WHERE t.tag_name ILIKE $1
+        ORDER BY m.title_english
+        LIMIT $2 OFFSET $3
+    """
+    rows = await db.fetch(query, tag_name, limit, offset)
     return [manga for row in rows if (manga := record_to_manga(row)) is not None]
 
 

@@ -144,6 +144,8 @@ CREATE TABLE IF NOT EXISTS manga_genres (
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     CONSTRAINT unique_manga_genre UNIQUE (manga_id, tag_id)
 );
+CREATE TRIGGER set_manga_genres_updated_at
+BEFORE UPDATE ON manga_genres
 
 -- Table read (Junction table for User to Manga relationship - Reading tracking)
 CREATE TABLE IF NOT EXISTS read (

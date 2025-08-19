@@ -197,7 +197,7 @@ EXECUTE FUNCTION set_updated_at();
 CREATE TABLE IF NOT EXISTS manga_reviews (
     id SERIAL PRIMARY KEY,
     manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    review_id INTEGER NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+    review_id INTEGER NOT NULL REFERENCES review(review_id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     CONSTRAINT unique_manga_review UNIQUE (manga_id, review_id)
@@ -205,5 +205,19 @@ CREATE TABLE IF NOT EXISTS manga_reviews (
 
 CREATE TRIGGER set_manga_reviews_updated_at
 BEFORE UPDATE ON manga_reviews
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS page_reviews (
+    id SERIAL PRIMARY KEY,
+    page_id INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
+    review_id INTEGER NOT NULL REFERENCES review(review_id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT unique_page_review UNIQUE (page_id, review_id)
+);
+
+CREATE TRIGGER set_page_reviews_updated_at
+BEFORE UPDATE ON page_reviews
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();

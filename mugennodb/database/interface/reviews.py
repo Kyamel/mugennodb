@@ -1,4 +1,3 @@
-from typing import Optional
 from mugennocore.interfaces.ireview import IReview
 from mugennodb.database.mapping.review_map import record_to_review
 from mugennodb.conection.database_protocol import DatabaseProtocol
@@ -8,7 +7,7 @@ from mugennocore.model.reviews import Review
 async def insert_manga_review(
     db: DatabaseProtocol, review: IReview, manga_id: int
 ) -> int:
-    async with db.transaction() as conn:
+    async with (await db.transaction()) as conn:
         # 1Inserir review
         record = await conn.fetchrow(
             """

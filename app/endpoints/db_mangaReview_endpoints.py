@@ -43,8 +43,8 @@ async def handle_command(db, parts: list[str]) -> None:
             return
 
     if cmd == "insert_manga_review":
-        manga_id = float(args.get("manga_id", "1"))
-        review_id = float(args.get("review_id", "1"))
+        manga_id = int(args.get("manga_id", "1"))
+        review_id = int(args.get("review_id", "1"))
 
         review = MangaReview(
             id=0,

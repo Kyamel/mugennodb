@@ -2,6 +2,7 @@ from typing import Optional
 from mugennodb.database.mapping.manga_review_map import record_to_mangaReview
 from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennocore.interfaces.ipage_review import IPageReview
+from mugennodb.database.mapping.page_reviews_map import record_to_pageReview
 
 
 async def insert_page_review(db: DatabaseProtocol, review: IPageReview) -> int:

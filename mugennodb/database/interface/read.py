@@ -6,11 +6,11 @@ from typing import Optional
 
 async def insert_read(db: DatabaseProtocol, read: IRead) -> bool:
     """
-    Insere uma relação de leitura na tabela users_mangas.
+    Insere uma relação de leitura na tabela read.
     """
     record = await db.fetchrow(
         """
-        INSERT INTO users_mangas (user_id, manga_id, status)
+        INSERT INTO read (user_id, manga_id, status)
         VALUES ($1, $2, $3)
         RETURNING *
         """,
@@ -28,7 +28,7 @@ async def get_read(
     Busca uma leitura pelo par (user_id, manga_id).
     """
     record = await db.fetchrow(
-        "SELECT * FROM users_mangas WHERE user_id=$1 AND manga_id=$2", user_id, manga_id
+        "SELECT * FROM read WHERE user_id=$1 AND manga_id=$2", user_id, manga_id
     )
     return record_to_read(record)
 
@@ -41,7 +41,7 @@ async def update_read_status(
     """
     record = await db.fetchrow(
         """
-        UPDATE users_mangas
+        UPDATE read
         SET status=$3, updated_at=NOW()
         WHERE user_id=$1 AND manga_id=$2
         RETURNING *
@@ -58,6 +58,6 @@ async def delete_read(db: DatabaseProtocol, user_id: int, manga_id: int) -> bool
     Remove uma leitura da tabela.
     """
     result = await db.execute(
-        "DELETE FROM users_mangas WHERE user_id=$1 AND manga_id=$2", user_id, manga_id
+        "DELETE FROM read WHERE user_id=$1 AND manga_id=$2", user_id, manga_id
     )
     return result == "DELETE 1"

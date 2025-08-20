@@ -43,8 +43,8 @@ async def handle_command(db, parts: list[str]) -> None:
             return
 
     if cmd == "insert_page_review":
-        page_id = float(args.get("page_id", "1"))
-        review_id = float(args.get("review_id", "1"))
+        page_id = int(args.get("page_id", "1"))
+        review_id = int(args.get("review_id", "1"))
 
         review = PageReview(
             id=0,

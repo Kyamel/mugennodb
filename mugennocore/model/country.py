@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass(slots=True)
 class Country:
     """Representa um País do banco de dados."""

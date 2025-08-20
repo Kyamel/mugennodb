@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass(slots=True)
 class RelatedManga:
     """Representa a relação entre dois mangás."""

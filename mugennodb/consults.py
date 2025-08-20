@@ -4,6 +4,7 @@ from mugennodb.conection.database_protocol import DatabaseProtocol
 BASE_DIR = os.path.dirname(__file__)
 CONSULTS_FILE = os.path.join(BASE_DIR, "database", "consults.sql")
 
+
 async def execute_get_mangas_ongoing(db: DatabaseProtocol) -> None:
     with open(CONSULTS_FILE, encoding="utf-8") as f:
         sql = """
@@ -20,6 +21,7 @@ async def execute_get_mangas_ongoing(db: DatabaseProtocol) -> None:
         print(f"[✓] Consulta executada. Encontrados {len(resultados)} resultados.")
         for manga in resultados:
             print(f"{manga['title_english']} - {manga['release_date']}")
+
 
 async def execute_get_mangas_and_genres(db: DatabaseProtocol) -> None:
     with open(CONSULTS_FILE, encoding="utf-8") as f:
@@ -43,6 +45,7 @@ async def execute_get_mangas_and_genres(db: DatabaseProtocol) -> None:
         for manga in resultados:
             print(f" - {manga['manga_title']} ({manga['genre']})")
 
+
 async def execute_get_users_without_reading(db: DatabaseProtocol) -> None:
     with open(CONSULTS_FILE, encoding="utf-8") as f:
         sql = """
@@ -60,7 +63,10 @@ async def execute_get_users_without_reading(db: DatabaseProtocol) -> None:
         for user in resultados:
             print(f" - {user['user_name']} ({user['email']})")
 
-async def execute_get_users_with_numReviews_and_averageScore(db: DatabaseProtocol) -> None:
+
+async def execute_get_users_with_numReviews_and_averageScore(
+    db: DatabaseProtocol,
+) -> None:
     with open(CONSULTS_FILE, encoding="utf-8") as f:
         sql = """
             SELECT
@@ -78,7 +84,10 @@ async def execute_get_users_with_numReviews_and_averageScore(db: DatabaseProtoco
         resultados = await db.fetch(sql)
         print(f"[✓] Consulta executada. Encontrados {len(resultados)} resultados.")
         for user in resultados:
-            print(f" - {user['user_name']} ({user['number_of_reviews']}) - Average Score: {user['average_score']:.2f}")
+            print(
+                f" - {user['user_name']} ({user['number_of_reviews']}) - Average Score: {user['average_score']:.2f}"
+            )
+
 
 async def execute_get_mangas_same_genreOf_attackOnTitan(db: DatabaseProtocol) -> None:
     with open(CONSULTS_FILE, encoding="utf-8") as f:

@@ -67,7 +67,6 @@ class Manga:
             f"Updated: {self.updated_at.strftime('%Y-%m-%d %H:%M:%S')}"
         )
 
-
     def __repr__(self) -> str:
         return (
             f"Manga(id={self.id}, title_english={self.title_english!r}, "

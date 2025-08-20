@@ -62,7 +62,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     elif parts[0] == "drop_all":
         await destroy_database_schema(db)
     elif parts[0] == "get_users_with_reviews":
-        await execute_get_users_with_reviews(db)
+        await execute_get_users_with_numReviews_and_averageScore(db)
     elif parts[0] == "get_mangas_ongoing":
         await execute_get_mangas_ongoing(db)
     elif parts[0] == "get_mangas_and_genres":

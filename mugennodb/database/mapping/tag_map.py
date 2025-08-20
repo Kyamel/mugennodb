@@ -2,6 +2,7 @@ from typing import Optional
 from asyncpg import Record
 from mugennocore.model.tag import Tag
 
+
 def record_to_tag(row: Record) -> Optional[Tag]:
     if row is None:
         return None

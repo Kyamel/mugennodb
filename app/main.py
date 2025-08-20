@@ -5,7 +5,12 @@ import asyncio
 from shlex import split
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.completion import NestedCompleter, WordCompleter, Completer, Completion
+from prompt_toolkit.completion import (
+    NestedCompleter,
+    WordCompleter,
+    Completer,
+    Completion,
+)
 from typing import Dict, List
 
 from app.endpoints import (
@@ -45,7 +50,9 @@ class HybridCompleter(Completer):
         structure = {}
         for cmd, info in commands.items():
             args = info.get("args", [])
-            positional = [arg.split(":")[0] + "=" for arg in args if not arg.startswith("--")]
+            positional = [
+                arg.split(":")[0] + "=" for arg in args if not arg.startswith("--")
+            ]
             structure[cmd] = {arg: None for arg in positional}
         return structure
 
@@ -54,7 +61,9 @@ class HybridCompleter(Completer):
         positional = {}
         for cmd, info in commands.items():
             args = info.get("args", [])
-            positional[cmd] = [arg.split(":")[0] + "=" for arg in args if not arg.startswith("--")]
+            positional[cmd] = [
+                arg.split(":")[0] + "=" for arg in args if not arg.startswith("--")
+            ]
         return positional
 
     def _build_optional_args(self, commands: Dict[str, Dict]) -> Dict[str, List[str]]:
@@ -62,7 +71,9 @@ class HybridCompleter(Completer):
         optional = {}
         for cmd, info in commands.items():
             args = info.get("args", [])
-            optional[cmd] = [arg.split(":")[0] + "=" for arg in args if arg.startswith("--")]
+            optional[cmd] = [
+                arg.split(":")[0] + "=" for arg in args if arg.startswith("--")
+            ]
         return optional
 
     def get_completions(self, document, complete_event):
@@ -87,7 +98,7 @@ class HybridCompleter(Completer):
         # Count how many argumentos posicionais já foram fornecidos
         provided_positional = 0
         provided_optional = 0
-        
+
         for arg in text[1:]:
             if arg.startswith("--"):
                 provided_optional += 1
@@ -97,32 +108,37 @@ class HybridCompleter(Completer):
         # Se ainda faltam argumentos posicionais, sugira o próximo
         if provided_positional < len(positional):
             next_positional_arg = positional[provided_positional]
-            
+
             # Se o usuário já começou a digitar este argumento específico
             if current_word and not current_word.startswith("--"):
                 # Sugere apenas este argumento posicional específico
                 if next_positional_arg.startswith(current_word):
-                    yield Completion(next_positional_arg, start_position=-len(current_word))
+                    yield Completion(
+                        next_positional_arg, start_position=-len(current_word)
+                    )
             else:
                 # Sugere o próximo argumento posicional
                 yield Completion(next_positional_arg, start_position=-len(current_word))
-            
+
             return
 
         # Todos os argumentos posicionais foram fornecidos, sugerir opcionais
-        used_opts = {arg.split("=")[0] + "=" for arg in text[1:] if arg.startswith("--")}
+        used_opts = {
+            arg.split("=")[0] + "=" for arg in text[1:] if arg.startswith("--")
+        }
         remaining_opts = [opt for opt in optional if opt not in used_opts]
 
         # Filtrar opcionais baseado no que o usuário já digitou
         if current_word.startswith("--"):
-            matching_opts = [opt for opt in remaining_opts if opt.startswith(current_word)]
+            matching_opts = [
+                opt for opt in remaining_opts if opt.startswith(current_word)
+            ]
             for opt in matching_opts:
                 yield Completion(opt, start_position=-len(current_word))
         elif remaining_opts:
             # Se não está digitando um opcional mas há opcionais disponíveis
             for opt in remaining_opts:
                 yield Completion(opt, start_position=0)
-
 
 
 def setup_completer():
@@ -179,7 +195,7 @@ async def repl():
                 help_command.show_help()
                 continue
 
-            parts = split(cmd_text) # Split command into parts respecting quotes
+            parts = split(cmd_text)  # Split command into parts respecting quotes
             if not parts:
                 continue
 
@@ -207,7 +223,7 @@ async def repl():
                     await review_endpoints.handle_command(db, parts)
                 elif parts[0] in db_chapter_review_endpoints.COMMANDS:
                     await db_chapter_review_endpoints.handle_command(db, parts)
-                elif parts[0] in read_endpoints.COMMANDS:   
+                elif parts[0] in read_endpoints.COMMANDS:
                     await read_endpoints.handle_command(db, parts)
                 elif parts[0] in db_mangaReview_endpoints.COMMANDS:
                     await db_mangaReview_endpoints.handle_command(db, parts)

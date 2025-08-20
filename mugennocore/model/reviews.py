@@ -7,8 +7,8 @@ from uuid import UUID
 class Review:
     """Represents a review written by a user."""
 
-    review_id: int       # Primary Key
-    users_id: int         # Foreign Key
+    review_id: int  # Primary Key
+    users_id: int  # Foreign Key
     score: float
     content: str
     created_at: datetime

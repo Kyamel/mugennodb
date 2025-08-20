@@ -13,6 +13,7 @@ COMMANDS = {
     },
 }
 
+
 def parse_args_key_value(parts: list[str]) -> dict[str, str]:
     """
     Converts parts ["user_id=101", "--role=admin"] in {"user_id": "101", "role": "admin"}
@@ -23,6 +24,7 @@ def parse_args_key_value(parts: list[str]) -> dict[str, str]:
             key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
+
 
 async def handle_command(db, parts: list[str]) -> None:
     cmd = parts[0]
@@ -49,7 +51,7 @@ async def handle_command(db, parts: list[str]) -> None:
             manga_id=manga_id,
             review_id=review_id,
             created_at=datetime.now(),
-            updated_at=datetime.now()
+            updated_at=datetime.now(),
         )
 
         review_id = await insert_manga_review(db, review)

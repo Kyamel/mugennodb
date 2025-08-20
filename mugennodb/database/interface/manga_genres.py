@@ -29,8 +29,9 @@ async def get_genres_for_manga(db: DatabaseProtocol, manga_id: int) -> List[ITag
     return [tag for row in rows if (tag := record_to_tag(row)) is not None]
 
 
-
-async def remove_genre_from_manga(db: DatabaseProtocol, manga_id: int, tag_id: int) -> None:
+async def remove_genre_from_manga(
+    db: DatabaseProtocol, manga_id: int, tag_id: int
+) -> None:
     """Remove a associação de um gênero de um mangá."""
     await db.execute(
         "DELETE FROM manga_genres WHERE manga_id = $1 AND tag_id = $2",

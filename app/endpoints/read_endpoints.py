@@ -4,22 +4,22 @@ from mugennodb.database.interface.read import insert_read, get_read, update_read
 
 COMMANDS = {
     "insert_read": {
-        "description": "Insere um relacionamento user-manga com status",
+        "description": "Inserts a user-manga relationship with status",
         "args": ["user_id:int", "manga_id:int", "--status:str?"],
         "example": "insert_read user_id=1 manga_id=10 --status=reading",
     },
     "get_read": {
-        "description": "Busca uma leitura por usuário e mangá",
+        "description": "Search for a reading by user and manga",
         "args": ["user_id:int", "manga_id:int"],
         "example": "get_read user_id=1 manga_id=10",
     },
     "update_read_status": {
-        "description": "Atualiza o status de leitura",
+        "description": "Updates the reading status",
         "args": ["user_id:int", "manga_id:int", "status:str"],
         "example": "update_read_status user_id=1 manga_id=10 status=finished",
     },
     "delete_read": {
-        "description": "Remove uma leitura",
+        "description": "Remove a reading",
         "args": ["user_id:int", "manga_id:int"],
         "example": "delete_read user_id=1 manga_id=10",
     },

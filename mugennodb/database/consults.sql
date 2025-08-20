@@ -132,7 +132,7 @@ FROM (
   JOIN manga_reviews mr
     ON m.id = mr.manga_id
   JOIN review r
-    ON mr.review_id = r.id
+    ON mr.review_id = r.review_id
   GROUP BY
     m.title_english
 ) AS MangaScores

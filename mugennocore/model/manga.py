@@ -7,6 +7,7 @@ from uuid import UUID
 @dataclass(slots=True)
 class Manga:
     id: int
+    country_id: int
     title_english: str
     title_native: str
     release_date: date
@@ -54,7 +55,18 @@ class Manga:
             self.updated_at = updated_at
 
     def __str__(self) -> str:
-        return f"{self.title_english} / {self.title_native}"
+        return (
+            f"[Manga ID: {self.id}] "
+            f"{self.title_english} ({self.title_native}) | "
+            f"Type: {self.comic_type} | Status: {self.active_status} | "
+            f"Release: {self.release_date.strftime('%Y-%m-%d')}"
+            f"{f', Finish: {self.finish_date.strftime('%Y-%m-%d')}' if self.finish_date else ''} | "
+            f"MAL ID: {self.mal_id} | "
+            f"Country ID: {self.country_id} | "
+            f"Created: {self.created_at.strftime('%Y-%m-%d %H:%M:%S')} | "
+            f"Updated: {self.updated_at.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+
 
     def __repr__(self) -> str:
         return (

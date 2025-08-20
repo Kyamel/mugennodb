@@ -8,6 +8,7 @@ def record_to_user(row: Record) -> Optional[User]:
         return None
     return User(
         id=row["id"],
+        country_id=row["country_id"],
         user_name=row["user_name"],
         user_password=row["user_password"],
         user_role=row["user_role"],

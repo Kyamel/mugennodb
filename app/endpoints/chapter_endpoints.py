@@ -84,6 +84,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         chapter = Chapter(
             id=0,
+            country_id=4,
             manga_id=manga_id,
             title=title,
             cover=uuid4(),

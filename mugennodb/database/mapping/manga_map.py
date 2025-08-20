@@ -8,6 +8,7 @@ def record_to_manga(row: Record) -> Optional[Manga]:
         return None
     return Manga(
         id=row["id"],
+        country_id=row["country_id"],
         title_english=row["title_english"],
         title_native=row["title_native"],
         release_date=row["release_date"],  # date

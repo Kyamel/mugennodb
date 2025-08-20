@@ -8,6 +8,7 @@ def record_to_chapter(row: Record) -> Optional[Chapter]:
         return None
     return Chapter(
         id=row["id"],
+        country_id=row["country_id"],
         manga_id=row["manga_id"],
         title=row["title"],
         ch_number=row["ch_number"],

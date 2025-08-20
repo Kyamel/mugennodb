@@ -8,6 +8,7 @@ class Chapter:
     """Represents a Manga Chapter from the database."""
 
     id: int
+    country_id: int
     manga_id: int
     title: str
     cover: UUID

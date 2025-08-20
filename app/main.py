@@ -5,7 +5,7 @@ import asyncio
 from shlex import split
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.completion import NestedCompleter, WordCompleter, Completer
+from prompt_toolkit.completion import NestedCompleter, WordCompleter, Completer, Completion
 from typing import Dict, List
 
 from app.endpoints import (
@@ -38,6 +38,7 @@ class HybridCompleter(Completer):
         )
         self.positional_args = self._build_positional_args(commands)
         self.optional_args = self._build_optional_args(commands)
+        self.commands = commands  # Armazenar comandos para referência
 
     def _build_nested_structure(self, commands: Dict[str, Dict]) -> Dict:
         """Build nested structure for commands and positional arguments."""
@@ -66,6 +67,7 @@ class HybridCompleter(Completer):
 
     def get_completions(self, document, complete_event):
         text = document.text_before_cursor.split()
+        current_word = document.get_word_before_cursor(WORD=True)
 
         if not text:
             # No input yet: suggest all commands
@@ -82,20 +84,44 @@ class HybridCompleter(Completer):
         positional = self.positional_args.get(cmd, [])
         optional = self.optional_args.get(cmd, [])
 
-        num_args_typed = len(text) - 1  # excluding command itself
+        # Count how many argumentos posicionais já foram fornecidos
+        provided_positional = 0
+        provided_optional = 0
+        
+        for arg in text[1:]:
+            if arg.startswith("--"):
+                provided_optional += 1
+            else:
+                provided_positional += 1
 
-        # If still missing positional arguments, only suggest positional args (nested)
-        if num_args_typed < len(positional):
-            yield from self.nested.get_completions(document, complete_event)
+        # Se ainda faltam argumentos posicionais, sugira o próximo
+        if provided_positional < len(positional):
+            next_positional_arg = positional[provided_positional]
+            
+            # Se o usuário já começou a digitar este argumento específico
+            if current_word and not current_word.startswith("--"):
+                # Sugere apenas este argumento posicional específico
+                if next_positional_arg.startswith(current_word):
+                    yield Completion(next_positional_arg, start_position=-len(current_word))
+            else:
+                # Sugere o próximo argumento posicional
+                yield Completion(next_positional_arg, start_position=-len(current_word))
+            
             return
 
-        # All required positional args typed, suggest optional args not used yet
+        # Todos os argumentos posicionais foram fornecidos, sugerir opcionais
         used_opts = {arg.split("=")[0] + "=" for arg in text[1:] if arg.startswith("--")}
         remaining_opts = [opt for opt in optional if opt not in used_opts]
 
-        if remaining_opts:
-            word_completer = WordCompleter(remaining_opts)
-            yield from word_completer.get_completions(document, complete_event)
+        # Filtrar opcionais baseado no que o usuário já digitou
+        if current_word.startswith("--"):
+            matching_opts = [opt for opt in remaining_opts if opt.startswith(current_word)]
+            for opt in matching_opts:
+                yield Completion(opt, start_position=-len(current_word))
+        elif remaining_opts:
+            # Se não está digitando um opcional mas há opcionais disponíveis
+            for opt in remaining_opts:
+                yield Completion(opt, start_position=0)
 
 
 

@@ -68,6 +68,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         user = User(
             id=0,
+            country_id=4,
             user_name=username,
             user_password="password123",
             user_role=role,

@@ -75,6 +75,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         manga = Manga(
             id=0,
+            country_id=4,
             title_english=title_english,
             title_native=title_native,
             release_date=date(2023, 1, 1),

@@ -43,14 +43,15 @@ async def get_mangas_by_tag_name(db: DatabaseProtocol, tag_name: str, limit: int
 async def insert_manga(db: DatabaseProtocol, manga: IManga) -> int:
     query = """
         INSERT INTO mangas (
-            title_english, title_native, release_date, finish_date,
+            country_id, title_english, title_native, release_date, finish_date,
             active_status, comic_type, cover, mal_id
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id
     """
     row = await db.fetchrow(
         query,
+        manga.country_id,
         manga.title_english,
         manga.title_native,
         manga.release_date,

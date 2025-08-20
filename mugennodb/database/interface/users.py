@@ -27,15 +27,16 @@ async def search_users_by_name(db: DatabaseProtocol, username: str) -> List[IUse
 async def insert_user(db: DatabaseProtocol, user: IUser) -> int:
     query = """
         INSERT INTO users (
-            user_name, user_password, user_role, join_date, email,
+            country_id, user_name, user_password, user_role, join_date, email,
             is_banned, nickname, user_profile, user_banner,
             is_active, allow_nsfw, allow_dm
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING id
     """
     row = await db.fetchrow(
         query,
+        user.country_id,
         user.user_name,
         user.user_password,
         user.user_role,

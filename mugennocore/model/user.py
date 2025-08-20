@@ -6,6 +6,7 @@ from uuid import UUID
 @dataclass(slots=True)
 class User:
     id: int
+    country_id: int
     user_name: str
     user_password: str
     user_role: str

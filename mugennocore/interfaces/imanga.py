@@ -6,6 +6,7 @@ from uuid import UUID
 @runtime_checkable
 class IManga(Protocol):
     id: int
+    country_id: int
     title_english: str
     title_native: str
     release_date: date

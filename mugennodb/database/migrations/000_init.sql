@@ -13,6 +13,7 @@ $$ LANGUAGE plpgsql;
 -- Table users
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    country_id INTEGER NOT NULL,
     user_name VARCHAR(128) NOT NULL,
     user_password VARCHAR(128) NOT NULL,
     user_role VARCHAR(128) NOT NULL,
@@ -26,7 +27,9 @@ CREATE TABLE IF NOT EXISTS users (
     allow_nsfw BOOLEAN NOT NULL DEFAULT FALSE,
     allow_dm BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+
 );
 
 CREATE TRIGGER set_users_updated_at
@@ -37,6 +40,7 @@ EXECUTE FUNCTION set_updated_at();
 -- Table mangas
 CREATE TABLE IF NOT EXISTS mangas (
     id SERIAL PRIMARY KEY,
+    country_id INTEGER NOT NULL,
     title_english VARCHAR(256) NOT NULL,
     title_native VARCHAR(256) NOT NULL,
     release_date DATE NOT NULL,
@@ -46,7 +50,8 @@ CREATE TABLE IF NOT EXISTS mangas (
     cover  UUID NOT NULL,
     mal_id INTEGER NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE TRIGGER set_mangas_updated_at
@@ -57,13 +62,15 @@ EXECUTE FUNCTION set_updated_at();
 -- Table chapters
 CREATE TABLE IF NOT EXISTS chapters (
     id SERIAL PRIMARY KEY,
+    country_id INTEGER NOT NULL,
     manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
     title VARCHAR(256) NOT NULL,
     cover  UUID NOT NULL,
     ch_number INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_manga_ch_number UNIQUE (manga_id, ch_number)
+    CONSTRAINT unique_manga_ch_number UNIQUE (manga_id, ch_number),
+    FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE TRIGGER set_chapters_updated_at

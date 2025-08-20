@@ -6,6 +6,7 @@ from uuid import UUID
 @runtime_checkable
 class IChapter(Protocol):
     id: int
+    country_id: int
     manga_id: int
     title: str
     cover: UUID

@@ -6,6 +6,7 @@ from typing import Protocol, runtime_checkable
 @runtime_checkable
 class IUser(Protocol):
     id: int
+    country_id: int
     user_name: str
     user_password: str
     user_role: str

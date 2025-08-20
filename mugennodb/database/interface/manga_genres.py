@@ -17,16 +17,17 @@ async def add_genre_to_manga(db: DatabaseProtocol, manga_id: int, tag_id: int) -
 
 
 async def get_genres_for_manga(db: DatabaseProtocol, manga_id: int) -> List[ITag]:
-    """Busca todas as tags do tipo 'GENRE' associadas a um mangá específico."""
+    """Busca todas as tags associadas a um mangá específico (sem restrição de tipo)."""
     query = """
-        SELECT t.*
-        FROM tags t
-        JOIN manga_genres mg ON t.id = mg.tag_id
-        WHERE mg.manga_id = $1 AND t.tag_type = 'GENRE'
-        ORDER BY t.tag_name ASC
+        SELECT m.*
+        FROM mangas m
+        JOIN manga_genres mg ON m.id = mg.manga_id
+        JOIN tags t ON t.id = mg.tag_id
+        WHERE t.id = $1;
     """
     rows = await db.fetch(query, manga_id)
     return [tag for row in rows if (tag := record_to_tag(row)) is not None]
+
 
 
 async def remove_genre_from_manga(db: DatabaseProtocol, manga_id: int, tag_id: int) -> None:

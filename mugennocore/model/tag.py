@@ -12,7 +12,7 @@ class Tag:
     updated_at: datetime
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.type})"
+        return f"{self.id} - {self.name} ({self.type})"
 
     def __repr__(self) -> str:
         return (

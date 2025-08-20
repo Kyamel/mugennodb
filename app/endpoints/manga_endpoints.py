@@ -22,12 +22,12 @@ COMMANDS = {
         "example": "insert_manga --title_english='Bleach' --mal_id=321",
     },
     "search_manga": {
-        "description": "Busca mangás por título com paginação.",
+        "description": "Search manga by title with pagination.",
         "args": ["title:str", "--limit:int?", "--offset:int?"],
         "example": "search_manga title=Hero --limit=5",
     },
     "filter_by_tag": {
-        "description": "Filtra mangás por tag com paginação.",
+        "description": "Filter manga by tag with pagination.",
         "args": ["tag:str", "--limit:int?", "--offset:int?"],
         "example": "filter_by_tag tag=Ação --limit=10",
     },
@@ -92,7 +92,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     elif cmd == "search_manga":
         title = args.get("title")
         if not title:
-            print("O argumento 'title' é obrigatório.")
+            print("The 'title' argument is required.")
             return
         
         limit = int(args.get("limit", 10))
@@ -100,17 +100,17 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         
         mangas = await search_mangas_by_title(db, title, limit, offset)
         if not mangas:
-            print(f"Nenhum mangá encontrado com o título '{title}'.")
+            print(f"No manga found with the title '{title}'.")
             return
         
-        print(f"--- Resultado da busca por '{title}' ---")
+        print(f"--- Search results for '{title}' ---")
         for m in mangas:
             print(f"  ID: {m.id} - {m.title_english}")
 
     elif cmd == "filter_by_tag":
         tag = args.get("tag")
         if not tag:
-            print("O argumento 'tag' é obrigatório.")
+            print("The 'tag' argument is required.")
             return
             
         limit = int(args.get("limit", 10))
@@ -118,9 +118,9 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         mangas = await get_mangas_by_tag_name(db, tag, limit, offset)
         if not mangas:
-            print(f"Nenhum mangá encontrado com a tag '{tag}'.")
+            print(f"No manga found with the tag '{tag}'.")
             return
 
-        print(f"--- Mangás com a tag '{tag}' ---")
+        print(f"--- Mangas with the tag '{tag}' ---")
         for m in mangas:
             print(f"  ID: {m.id} - {m.title_english}")

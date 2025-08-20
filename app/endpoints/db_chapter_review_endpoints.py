@@ -3,7 +3,7 @@ from mugennodb.database.interface.chapter_review import insert_chapter_review
 
 COMMANDS = {
     "insert_chapter_review": {
-        "description": "Cria relação entre um capítulo e uma review",
+        "description": "Creates a relationship between a chapter and a review",
         "args": ["review_id:int", "chapter_id:int"],
         "example": "insert_chapter_review review_id=1 chapter_id=10",
     }
@@ -41,7 +41,7 @@ async def handle_command(db, parts: list[str]) -> None:
             review_id = int(args["review_id"])
             chapter_id = int(args["chapter_id"])
         except ValueError:
-            print("Os argumentos 'review_id' e 'chapter_id' devem ser números inteiros.")
+            print("The 'review_id' and 'chapter_id' arguments must be integers.")
             return
 
         relation = ChapterReview(
@@ -51,6 +51,6 @@ async def handle_command(db, parts: list[str]) -> None:
 
         success = await insert_chapter_review(db, relation)
         if success:
-            print(f"Relação inserida: review_id={review_id}, chapter_id={chapter_id}")
+            print(f"Inserted relationship: review_id={review_id}, chapter_id={chapter_id}")
         else:
-            print("Falha ao inserir a relação.")
+            print("Failed to insert relation.")

@@ -12,17 +12,17 @@ from .chapter_endpoints import parse_key_value_args
 
 COMMANDS = {
     "add_genre": {
-        "description": "Adiciona um gênero (tag) a um mangá.",
+        "description": "Adds a genre (tag) to a manga.",
         "args": ["manga_id:int", "tag_id:int"],
         "example": "add_genre manga_id=1 tag_id=3",
     },
     "get_genres": {
-        "description": "Lista os gêneros de um mangá específico.",
+        "description": "Lists the genres of a specific manga.",
         "args": ["manga_id:int"],
         "example": "get_genres manga_id=1",
     },
     "create_genre_tag": {
-        "description": "Cria uma nova tag com o tipo 'GENRE'.",
+        "description": "Creates a new tag with the type 'GENRE'.",
         "args": ["name:str"],
         "example": "create_genre_tag name=Action",
     },
@@ -31,12 +31,12 @@ COMMANDS = {
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if not parts:
-        print("Nenhum comando de gênero fornecido.")
+        print("No gender command provided.")
         return
 
     cmd = parts[0]
     if cmd not in COMMANDS:
-        print(f"Comando de gênero desconhecido: {cmd}")
+        print(f"Command of unknown gender: {cmd}")
         return
 
     args = parse_key_value_args(parts[1:])
@@ -44,8 +44,8 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     required_keys = [arg.split(":")[0] for arg in COMMANDS[cmd].get("args", [])]
     for key in required_keys:
         if key not in args:
-            print(f"Argumento obrigatório ausente: {key}")
-            print(f"Exemplo: {COMMANDS[cmd]['example']}")
+            print(f"Missing mandatory argument: {key}")
+            print(f"Example: {COMMANDS[cmd]['example']}")
             return
 
     if cmd == "create_genre_tag":
@@ -59,42 +59,42 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         )
         tag_id = await insert_tag(db, genre_tag)
         if tag_id != -1:
-            print(f"✅ Tag de Gênero '{name}' criada com sucesso! ID: {tag_id}")
+            print(f"✅ Gender Tag '{name}' created successfully! ID: {tag_id}")
         else:
-            print(f"❌ Falha ao criar a tag de gênero. Ela já existe?")
+            print(f"❌ Failed to create gender tag. Does it already exist?")
 
     elif cmd == "add_genre":
         try:
             manga_id = int(args["manga_id"])
             tag_id = int(args["tag_id"])
         except ValueError:
-            print("Os IDs de mangá e tag devem ser números inteiros.")
+            print("Manga and tag IDs must be integers.")
             return
 
         rel_id = await add_genre_to_manga(db, manga_id, tag_id)
         if rel_id != -1:
-            print(f"Gênero (Tag ID: {tag_id}) adicionado ao Mangá (ID: {manga_id}) com sucesso.")
+            print(f"Gender (Tag ID: {tag_id}) added to Manga (ID: {manga_id}) successfully.")
         else:
-            print("Não foi possível adicionar o gênero. A relação já existe?")
+            print("Couldn't add gender. Does the relationship already exist?")
 
     elif cmd == "get_genres":
         try:
             manga_id = int(args["manga_id"])
         except ValueError:
-            print("O ID do mangá deve ser um número inteiro.")
+            print("Manga ID must be an integer.")
             return
         
         manga = await get_manga_by_id(db, manga_id)
         if not manga:
-            print(f"Mangá com ID {manga_id} não encontrado.")
+            print(f"Manga with ID {manga_id} not found.")
             return
 
         genres = await get_genres_for_manga(db, manga_id)
 
-        print(f"--- Gêneros para '{manga.title_english}' ---")
+        print(f"--- Genres for '{manga.title_english}' ---")
 
         if not genres:
-            print(f"Nenhum gênero encontrado para o mangá de ID {manga_id}.")
+            print(f"No genre found for ID {manga_id} manga.")
             return
 
         genre_names = [genre.name for genre in genres]

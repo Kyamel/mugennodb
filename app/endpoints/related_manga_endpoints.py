@@ -10,12 +10,12 @@ from .chapter_endpoints import parse_key_value_args
 
 COMMANDS = {
     "add_relation": {
-        "description": "Cria uma relação entre dois mangás.",
+        "description": "Creates a relationship between two mangas.",
         "args": ["source_id:int", "related_id:int", "type:str"],
         "example": "add_relation source_id=1 related_id=2 type=SEQUEL",
     },
     "get_relations": {
-        "description": "Lista todos os mangás relacionados a um mangá de origem.",
+        "description": "Lists all manga related to a source manga.",
         "args": ["source_id:int"],
         "example": "get_relations source_id=1",
     },
@@ -24,12 +24,12 @@ COMMANDS = {
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if not parts:
-        print("Nenhum comando de relação fornecido.")
+        print("No relation command provided.")
         return
 
     cmd = parts[0]
     if cmd not in COMMANDS:
-        print(f"Comando de relação desconhecido: {cmd}")
+        print(f"Unknown relation command: {cmd}")
         return
 
     args = parse_key_value_args(parts[1:])
@@ -37,8 +37,8 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     required_keys = [arg.split(":")[0] for arg in COMMANDS[cmd].get("args", [])]
     for key in required_keys:
         if key not in args:
-            print(f"Argumento obrigatório ausente: {key}")
-            print(f"Exemplo: {COMMANDS[cmd]['example']}")
+            print(f"Missing mandatory argument: {key}")
+            print(f"Example: {COMMANDS[cmd]['example']}")
             return
 
     if cmd == "add_relation":
@@ -46,7 +46,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             source_id = int(args["source_id"])
             related_id = int(args["related_id"])
         except ValueError:
-            print("Os IDs dos mangás devem ser números inteiros.")
+            print("Manga IDs must be integers.")
             return
 
         rel_type = args["type"].upper()
@@ -62,24 +62,24 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         rel_id = await add_relationship(db, new_relation)
         if rel_id != -1:
-            print(f"✅ Relação do tipo '{rel_type}' criada com sucesso! ID: {rel_id}")
+            print(f"✅ Relation of type '{rel_type}' created successfully! ID: {rel_id}")
         else:
-            print("❌ Falha ao criar a relação. Verifique se os IDs dos mangás existem.")
+            print("❌ Failed to create relationship. Check if manga IDs exist.")
 
     elif cmd == "get_relations":
         try:
             source_id = int(args["source_id"])
         except ValueError:
-            print("O ID do mangá deve ser um número inteiro.")
+            print("Manga ID must be an integer.")
             return
 
         related_mangas = await get_related_mangas_by_source_id(db, source_id)
 
         if not related_mangas:
-            print(f"Nenhum mangá relacionado encontrado para o mangá de ID {source_id}.")
+            print(f"No related manga found for ID manga {source_id}.")
             return
 
-        print(f"--- Relações para o Mangá ID: {source_id} ---")
+        print(f"--- Relations for Manga ID: {source_id} ---")
         for manga, rel_type in related_mangas:
             print(f"  [{rel_type}] -> {manga}")
         print("---------------------------------")

@@ -8,12 +8,12 @@ from mugennodb.database.interface.tags import (
 
 COMMANDS = {
     "get_tags": {
-        "description": "Lista todas as tags cadastradas.",
+        "description": "Lists all registered tags.",
         "args": ["--limit:int?", "--offset:int?"],
         "example": "get_tags --limit=10 --offset=20",
     },
     "insert_tag": {
-        "description": "Adiciona uma nova tag.",
+        "description": "Adds a new tag.",
         "args": ["name:str", "type:str"],
         "example": "insert_tag name=Shounen type=Demographic",
     },
@@ -31,12 +31,12 @@ def parse_key_value_args(parts: list[str]) -> dict[str, str]:
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     """Processa e executa comandos relacionados a tags."""
     if not parts:
-        print("Nenhum comando para 'tag' foi fornecido.")
+        print("No command for 'tag' was given.")
         return
 
     cmd = parts[0]
     if cmd not in COMMANDS:
-        print(f"Comando de tag desconhecido: {cmd}")
+        print(f"Unknown tag command: {cmd}")
         return
 
     args_def = COMMANDS[cmd]["args"]
@@ -45,8 +45,8 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
     for key in required_keys:
         if key not in args:
-            print(f"Argumento obrigatório ausente: {key}")
-            print(f"Exemplo de uso: {COMMANDS[cmd]['example']}")
+            print(f"Missing mandatory argument: {key}")
+            print(f"Usage example: {COMMANDS[cmd]['example']}")
             return
 
     if cmd == "get_tags":
@@ -54,7 +54,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             limit = int(args.get("limit", 0))
             offset = int(args.get("offset", 0))
         except ValueError:
-            print("Os valores de 'limit' e 'offset' devem ser números inteiros.")
+            print("The values of 'limit' and 'offset' must be integers.")
             return
 
         tags = await get_all_tags(db)
@@ -65,13 +65,13 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             tags = tags[:limit]
 
         if tags:
-            print("--- Tags Encontradas ---")
+            print("------ Tags Found ------")
             for t in tags:
                 # O método __str__ do objeto Tag será chamado aqui
                 print(t)
             print("------------------------")
         else:
-            print("Nenhuma tag encontrada com os filtros especificados.")
+            print("No tags found with the specified filters.")
 
     elif cmd == "insert_tag":
         # Argumentos 'name' e 'type' são validados pela checagem de 'required_keys'
@@ -87,4 +87,4 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         )
         
         tag_id = await insert_tag(db, new_tag)
-        print(f"✅ Tag '{tag_name}' inserida com sucesso com o ID: {tag_id}")
+        print(f"✅ Tag '{tag_name}' successfully inserted with ID: {tag_id}")

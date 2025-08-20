@@ -26,7 +26,7 @@ async def get_all_chapters_by_manga_id(
 async def insert_chapter(db: DatabaseProtocol, chapter: IChapter) -> int:
     query = """
         INSERT INTO chapters (manga_id, country_id, title, cover, ch_number)
-        VALUES ($1, $2, $3, $4)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id
     """
     row = await db.fetchrow(

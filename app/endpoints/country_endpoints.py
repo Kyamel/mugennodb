@@ -30,6 +30,7 @@ COMMANDS = {
     },
 }
 
+
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if not parts:
         print("No command for 'country' was given.")
@@ -42,7 +43,11 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
     args = parse_key_value_args(parts[1:])
 
-    required_keys = [arg.split(":")[0] for arg in COMMANDS[cmd].get("args", []) if not arg.startswith("--")]
+    required_keys = [
+        arg.split(":")[0]
+        for arg in COMMANDS[cmd].get("args", [])
+        if not arg.startswith("--")
+    ]
     for key in required_keys:
         if key not in args:
             print(f"Missing mandatory argument: {key}")
@@ -56,7 +61,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             return
         print("-- Registered Countries --")
         for c in countries:
-            print(f"  ID: {c.id:<4} | {c}") # Usa o __str__ do seu modelo
+            print(f"  ID: {c.id:<4} | {c}")  # Usa o __str__ do seu modelo
         print("--------------------------")
 
     elif cmd == "get_country":
@@ -83,6 +88,8 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         country_id = await insert_country(db, new_country)
         if country_id != -1:
-            print(f"✅ Country '{locale_code.upper()}' successfully inserted! ID: {country_id}")
+            print(
+                f"✅ Country '{locale_code.upper()}' successfully inserted! ID: {country_id}"
+            )
         else:
             print(f"❌ Failed to enter country. Does the locale code already exist?")

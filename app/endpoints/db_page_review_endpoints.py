@@ -13,6 +13,7 @@ COMMANDS = {
     },
 }
 
+
 def parse_args_key_value(parts: list[str]) -> dict[str, str]:
     """
     Converts parts ["user_id=101", "--role=admin"] in {"user_id": "101", "role": "admin"}
@@ -23,6 +24,7 @@ def parse_args_key_value(parts: list[str]) -> dict[str, str]:
             key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
+
 
 async def handle_command(db, parts: list[str]) -> None:
     cmd = parts[0]
@@ -41,15 +43,15 @@ async def handle_command(db, parts: list[str]) -> None:
             return
 
     if cmd == "insert_page_review":
-        page_id = float(args.get("page_id", "1"))
-        review_id = float(args.get("review_id", "1"))
+        page_id = int(args.get("page_id", "1"))
+        review_id = int(args.get("review_id", "1"))
 
         review = PageReview(
             id=0,
             page_id=page_id,
             review_id=review_id,
             created_at=datetime.now(),
-            updated_at=datetime.now()
+            updated_at=datetime.now(),
         )
 
         review_id = await insert_page_review(db, review)

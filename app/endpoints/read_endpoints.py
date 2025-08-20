@@ -1,6 +1,12 @@
 from datetime import datetime
+from typing import cast
 from mugennocore.model.read import Read
-from mugennodb.database.interface.read import insert_read, get_read, update_read_status, delete_read
+from mugennodb.database.interface.read import (
+    insert_read,
+    get_read,
+    update_read_status,
+    delete_read,
+)
 
 COMMANDS = {
     "insert_read": {
@@ -59,11 +65,18 @@ async def handle_command(db, parts: list[str]) -> None:
         print("Inserted!" if success else "Failed to insert")
 
     elif cmd == "get_read":
-        read = await get_read(db, int(args["user_id"]), int(args["manga_id"]))
-        print(read if read else "Not found")
+        read_result = await get_read(db, int(args["user_id"]), int(args["manga_id"]))
+        if read_result is None:
+            print("Not found")
+        else:
+            read =  cast(Read, read_result)
+            print(read)
+
 
     elif cmd == "update_read_status":
-        success = await update_read_status(db, int(args["user_id"]), int(args["manga_id"]), args["status"])
+        success = await update_read_status(
+            db, int(args["user_id"]), int(args["manga_id"]), args["status"]
+        )
         print("Updated!" if success else "Failed to update")
 
     elif cmd == "delete_read":

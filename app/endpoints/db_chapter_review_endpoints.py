@@ -9,6 +9,7 @@ COMMANDS = {
     }
 }
 
+
 def parse_args_key_value(parts: list[str]) -> dict[str, str]:
     """
     Converte lista ["review_id=1", "chapter_id=10"] em {"review_id": "1", "chapter_id": "10"}
@@ -19,6 +20,7 @@ def parse_args_key_value(parts: list[str]) -> dict[str, str]:
             key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
+
 
 async def handle_command(db, parts: list[str]) -> None:
     cmd = parts[0]
@@ -44,13 +46,12 @@ async def handle_command(db, parts: list[str]) -> None:
             print("The 'review_id' and 'chapter_id' arguments must be integers.")
             return
 
-        relation = ChapterReview(
-            review_id=review_id,
-            chapter_id=chapter_id
-        )
+        relation = ChapterReview(review_id=review_id, chapter_id=chapter_id)
 
         success = await insert_chapter_review(db, relation)
         if success:
-            print(f"Inserted relationship: review_id={review_id}, chapter_id={chapter_id}")
+            print(
+                f"Inserted relationship: review_id={review_id}, chapter_id={chapter_id}"
+            )
         else:
             print("Failed to insert relation.")

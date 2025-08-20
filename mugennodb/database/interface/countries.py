@@ -10,9 +10,13 @@ async def get_all_countries(db: DatabaseProtocol) -> List[ICountry]:
     return [country for row in rows if (country := record_to_country(row)) is not None]
 
 
-async def get_country_by_locale(db: DatabaseProtocol, locale_code: str) -> Optional[ICountry]:
+async def get_country_by_locale(
+    db: DatabaseProtocol, locale_code: str
+) -> Optional[ICountry]:
     """Busca um país específico pelo seu código de localidade (ex: 'BR', 'JP')."""
-    row = await db.fetchrow("SELECT * FROM countries WHERE locale_code = $1", locale_code.upper())
+    row = await db.fetchrow(
+        "SELECT * FROM countries WHERE locale_code = $1", locale_code.upper()
+    )
     return record_to_country(row)
 
 

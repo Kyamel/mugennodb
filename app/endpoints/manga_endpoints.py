@@ -33,6 +33,7 @@ COMMANDS = {
     },
 }
 
+
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     if not parts:
         print("No command provided.")
@@ -95,15 +96,15 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         if not title:
             print("The 'title' argument is required.")
             return
-        
+
         limit = int(args.get("limit", 10))
         offset = int(args.get("offset", 0))
-        
+
         mangas = await search_mangas_by_title(db, title, limit, offset)
         if not mangas:
             print(f"No manga found with the title '{title}'.")
             return
-        
+
         print(f"--- Search results for '{title}' ---")
         for m in mangas:
             print(f"  ID: {m.id} - {m.title_english}")
@@ -113,7 +114,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         if not tag:
             print("The 'tag' argument is required.")
             return
-            
+
         limit = int(args.get("limit", 10))
         offset = int(args.get("offset", 0))
 

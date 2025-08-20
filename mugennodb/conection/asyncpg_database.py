@@ -1,5 +1,7 @@
+from contextlib import asynccontextmanager
 import asyncpg  # type: ignore
-from typing import Any, List
+from typing import Any, AsyncContextManager
+from contextlib import AbstractAsyncContextManager
 
 
 class AsyncPGDatabase:
@@ -19,7 +21,7 @@ class AsyncPGDatabase:
         async with self.pool.acquire() as conn:
             return await conn.execute(query, *args)
 
-    async def fetch(self, query: str, *args: Any) -> List[Any]:
+    async def fetch(self, query: str, *args: Any) -> list[Any]:
         assert self.pool is not None, "Database pool not initialized"
         async with self.pool.acquire() as conn:
             return await conn.fetch(query, *args)
@@ -42,3 +44,17 @@ class AsyncPGDatabase:
         async with self.pool.acquire() as conn:
             async with conn.transaction():
                 await conn.execute(script)
+
+    @asynccontextmanager
+    async def transaction(self):
+        """
+        Context manager para transações.
+        Uso:
+        async with db.transaction():
+            await db.execute(...)
+            await db.execute(...)
+        """
+        assert self.pool is not None, "Database pool not initialized"
+        async with self.pool.acquire() as conn:
+            async with conn.transaction():
+                yield conn

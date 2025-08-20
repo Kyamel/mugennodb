@@ -12,7 +12,9 @@ async def get_manga_by_id(db: DatabaseProtocol, manga_id: int) -> Optional[IMang
     return record_to_manga(row)
 
 
-async def search_mangas_by_title(db: DatabaseProtocol, title_query: str, limit: int, offset: int) -> List[IManga]:
+async def search_mangas_by_title(
+    db: DatabaseProtocol, title_query: str, limit: int, offset: int
+) -> List[IManga]:
     """Busca mangás por parte do título (case-insensitive) com paginação."""
     query = """
         SELECT * FROM mangas
@@ -25,7 +27,9 @@ async def search_mangas_by_title(db: DatabaseProtocol, title_query: str, limit: 
     return [manga for row in rows if (manga := record_to_manga(row)) is not None]
 
 
-async def get_mangas_by_tag_name(db: DatabaseProtocol, tag_name: str, limit: int, offset: int) -> List[IManga]:
+async def get_mangas_by_tag_name(
+    db: DatabaseProtocol, tag_name: str, limit: int, offset: int
+) -> List[IManga]:
     """Filtra mangás por nome da tag (case-insensitive) com paginação."""
     query = """
         SELECT m.*

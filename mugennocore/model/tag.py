@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass(slots=True)
 class Tag:
     """Represents a Tag from the database."""

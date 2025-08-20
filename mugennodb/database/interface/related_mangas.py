@@ -21,7 +21,9 @@ async def add_relationship(db: DatabaseProtocol, relationship: IRelatedManga) ->
     return row["id"] if row else -1
 
 
-async def get_related_mangas_by_source_id(db: DatabaseProtocol, source_manga_id: int) -> List[Tuple[IManga, str]]:
+async def get_related_mangas_by_source_id(
+    db: DatabaseProtocol, source_manga_id: int
+) -> List[Tuple[IManga, str]]:
     """Busca todos os mangás relacionados a um mangá de origem.
     Retorna uma lista de tuplas, onde cada tupla contém:
     (objeto Manga do mangá relacionado, tipo da relação como string)"""

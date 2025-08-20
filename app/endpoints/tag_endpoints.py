@@ -19,6 +19,7 @@ COMMANDS = {
     },
 }
 
+
 def parse_key_value_args(parts: list[str]) -> dict[str, str]:
     """Converte partes como ["name=Shounen", "--limit=10"] em {"name": "Shounen", "limit": "10"}"""
     args = {}
@@ -27,6 +28,7 @@ def parse_key_value_args(parts: list[str]) -> dict[str, str]:
             key, value = part.lstrip("-").split("=", 1)
             args[key] = value
     return args
+
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
     """Processa e executa comandos relacionados a tags."""
@@ -58,7 +60,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             return
 
         tags = await get_all_tags(db)
-        
+
         # Aplica a paginação
         tags = tags[offset:]
         if limit > 0:
@@ -79,12 +81,12 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         tag_type = args["type"]
 
         new_tag = Tag(
-            id=0, # O ID é gerado pelo banco de dados
+            id=0,  # O ID é gerado pelo banco de dados
             name=tag_name,
             type=tag_type,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
-        
+
         tag_id = await insert_tag(db, new_tag)
         print(f"✅ Tag '{tag_name}' successfully inserted with ID: {tag_id}")

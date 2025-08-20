@@ -62,7 +62,9 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         rel_id = await add_relationship(db, new_relation)
         if rel_id != -1:
-            print(f"✅ Relation of type '{rel_type}' created successfully! ID: {rel_id}")
+            print(
+                f"✅ Relation of type '{rel_type}' created successfully! ID: {rel_id}"
+            )
         else:
             print("❌ Failed to create relationship. Check if manga IDs exist.")
 

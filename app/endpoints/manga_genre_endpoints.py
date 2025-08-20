@@ -73,7 +73,9 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
         rel_id = await add_genre_to_manga(db, manga_id, tag_id)
         if rel_id != -1:
-            print(f"Gender (Tag ID: {tag_id}) added to Manga (ID: {manga_id}) successfully.")
+            print(
+                f"Gender (Tag ID: {tag_id}) added to Manga (ID: {manga_id}) successfully."
+            )
         else:
             print("Couldn't add gender. Does the relationship already exist?")
 
@@ -83,7 +85,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         except ValueError:
             print("Manga ID must be an integer.")
             return
-        
+
         manga = await get_manga_by_id(db, manga_id)
         if not manga:
             print(f"Manga with ID {manga_id} not found.")

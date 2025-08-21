@@ -5,7 +5,7 @@
 É necessário ter instalado o postgresql, python (3.12+) e clonar o repositório:
 
 ```
-git clone 
+git clone https://github.com/Kyamel/mugennodb
 ```
 
 ## 2º passo

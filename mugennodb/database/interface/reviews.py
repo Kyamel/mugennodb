@@ -7,7 +7,7 @@ from mugennocore.model.reviews import Review
 async def insert_manga_review(
     db: DatabaseProtocol, review: IReview, manga_id: int
 ) -> int:
-    async with (await db.transaction()) as conn:
+    async with db.transaction() as conn:
         # 1Inserir review
         record = await conn.fetchrow(
             """

@@ -2,7 +2,11 @@
 
 ## 1º passo
 
-É necessário ter instalado o postgresql e o python
+É necessário ter instalado o postgresql, python (3.12+) e clonar o repositório:
+
+```
+git clone 
+```
 
 ## 2º passo
 

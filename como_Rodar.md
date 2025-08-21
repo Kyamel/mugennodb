@@ -37,3 +37,6 @@ poetry run python app/main.py
 ```
 
 Após executar este comando o terminal aparecerá assim:
+<img width="882" height="137" alt="Captura de tela de 2025-08-20 22-40-37" src="https://github.com/user-attachments/assets/9259f2b6-7961-490d-9845-66b95c5d3ba7" />
+
+Digite `help` para exibir os comandos.

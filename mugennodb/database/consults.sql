@@ -1,4 +1,33 @@
 SELECT
+title_english
+FROM mangas
+WHERE
+active_status = 'completed';
+
+Select 
+user_name
+FROM users
+WHERE
+user_role = 'user';
+
+SELECT
+user_name,
+join_date
+FROM users
+WHERE
+is_banned = 'true';
+
+SELECT
+u.user_name AS name,
+r.status AS read_status
+FROM users AS u
+JOIN read AS r
+ON
+u.id = r.user_id
+WHERE
+r.status = 'dropped';
+
+SELECT
   title_english,
   release_date
 FROM mangas

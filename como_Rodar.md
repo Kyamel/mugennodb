@@ -20,7 +20,7 @@ DB_PORT="5432"
 DB_NAME="ColoqueAquiONomeDoBanco"
 ```
 
-## 3º abra o terminal na raiz do projeto (`MUGENNODB`) e executo os comandos abaixo:
+## 3º abra o terminal na raiz do projeto (`MUGENNODB`) e execute os comandos abaixo:
 
 Instalar poetry
 

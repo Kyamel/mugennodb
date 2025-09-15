@@ -1,229 +1,278 @@
--- init.sql
+-- =======================================
+-- Tags
+-- =======================================
+CREATE TABLE tags (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(64) UNIQUE NOT NULL,
+);
 
--- Functions
-CREATE OR REPLACE FUNCTION set_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-   NEW.updated_at = now();
-   RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
--- Tables
--- Table countries
-CREATE TABLE IF NOT EXISTS countries (
-    id SERIAL PRIMARY KEY,
-    lang VARCHAR(10) NOT NULL,
+-- =======================================
+-- Tabelas base
+-- =======================================
+
+CREATE TABLE countries (
+    id BIGSERIAL PRIMARY KEY,
     locale_code VARCHAR(10) NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER set_countries_updated_at
-BEFORE UPDATE ON countries
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table users
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    country_id INTEGER NOT NULL,
-    user_name VARCHAR(128) NOT NULL,
-    user_password VARCHAR(128) NOT NULL,
-    user_role VARCHAR(128) NOT NULL,
-    join_date timestamptz NOT NULL,
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    country_id BIGINT NOT NULL REFERENCES countries(id),
+    username VARCHAR(64) NOT NULL UNIQUE,
     email VARCHAR(128) NOT NULL UNIQUE,
-    is_banned BOOLEAN NOT NULL DEFAULT FALSE,
-    nickname VARCHAR(128) NOT NULL,
-    user_profile UUID NOT NULL,
-    user_banner UUID NOT NULL,
+    password_hash TEXT NOT NULL,
+    role BIGINT REFERENCES tags(id),
+    nickname VARCHAR(128),
+    profile_bio TEXT,
+    profile_banner TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_banned BOOLEAN NOT NULL DEFAULT FALSE,
     allow_nsfw BOOLEAN NOT NULL DEFAULT FALSE,
-    allow_dm BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    FOREIGN KEY (country_id) REFERENCES countries(id)
-
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER set_users_updated_at
-BEFORE UPDATE ON users
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
+-- =======================================
+-- Sistema de social (follow)
+-- =======================================
 
--- Table mangas
-CREATE TABLE IF NOT EXISTS mangas (
-    id SERIAL PRIMARY KEY,
-    country_id INTEGER NOT NULL,
-    title_english VARCHAR(256) NOT NULL,
-    title_native VARCHAR(256) NOT NULL,
+CREATE TABLE user_follows (
+    follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    following_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (follower_id, following_id),
+    CONSTRAINT no_self_follow CHECK (follower_id <> following_id)
+);
+
+CREATE TABLE user_blocks (
+    blocker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    blocked_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (blocker_id, blocked_id),
+    CONSTRAINT no_self_block CHECK (blocker_id <> blocked_id)
+);
+
+-- =======================================
+-- Mangás
+-- =======================================
+CREATE TABLE mangas (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    made_in BIGINT NOT NULL REFERENCES countries(id),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title_english TEXT NOT NULL,
+    title_native TEXT NOT NULL,
     release_date DATE NOT NULL,
     finish_date DATE,
-    active_status VARCHAR(32) NOT NULL,
-    comic_type VARCHAR(32) NOT NULL,
-    cover  UUID NOT NULL,
-    mal_id INTEGER NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    FOREIGN KEY (country_id) REFERENCES countries(id)
+    status BIGINT REFERENCES tags(id),      -- (status IN ('ongoing','completed','hiatus','cancelled')) NOT NULL,
+    comic_type BIGINT REFERENCES tags(id),  -- (comic_type IN ('manga','manhwa','manhua','doujinshi','novel','other')) NOT NULL,
+    synopsis TEXT NOT NULL,
+    cover_url TEXT NOT NULL,
+    mal_id INTEGER UNIQUE,
+    kitsu_id INTEGER UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER set_mangas_updated_at
-BEFORE UPDATE ON mangas
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table chapters
-CREATE TABLE IF NOT EXISTS chapters (
-    id SERIAL PRIMARY KEY,
-    country_id INTEGER NOT NULL,
-    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    title VARCHAR(256) NOT NULL,
-    cover  UUID NOT NULL,
-    ch_number INTEGER NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_manga_ch_number UNIQUE (manga_id, ch_number),
-    FOREIGN KEY (country_id) REFERENCES countries(id)
+CREATE TABLE chapters (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    country_id BIGINT NOT NULL REFERENCES countries(id),
+    title TEXT NOT NULL,
+    cover_url TEXT NOT NULL,
+    ch_number NUMERIC(6,2) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT unique_manga_ch UNIQUE (manga_id, ch_number)
 );
 
-CREATE TRIGGER set_chapters_updated_at
-BEFORE UPDATE ON chapters
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table pages
-CREATE TABLE IF NOT EXISTS pages (
-    id SERIAL PRIMARY KEY,
-    chapter_id INTEGER NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
-    pg_number INTEGER NOT NULL,
-    source UUID NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_chapter_pg_number UNIQUE (chapter_id, pg_number)
+-- =======================================
+-- Discussões (threads)
+-- =======================================
+CREATE TABLE discussions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    manga_id UUID REFERENCES mangas(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES chapters(id) ON DELETE CASCADE,
+    group_id UUID REFERENCES groups(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    country_id BIGINT NOT NULL REFERENCES countries(id), -- idioma principal
+    required_role_level INTEGER DEFAULT 0;
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+ -- category TEXT NOT NULL CHECK (category IN ('discussion','theory','review','question','fanfic','fanart','fansub')), 
+    is_channel BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER set_pages_updated_at
-BEFORE UPDATE ON pages
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table tags
-CREATE TABLE IF NOT EXISTS tags (
-    id SERIAL PRIMARY KEY,
-    tag_name VARCHAR(128) NOT NULL UNIQUE,
-    tag_type VARCHAR(64) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+CREATE TABLE discussion_votes (
+    discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    vote SMALLINT NOT NULL CHECK (vote IN (-1,1)), -- upvote/downvote
+    created_at TIMESTAMPTZ DEFAULT now(),
+    PRIMARY KEY (discussion_id, user_id)
 );
 
-CREATE TRIGGER set_tags_updated_at
-BEFORE UPDATE ON tags
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Relationships
-
--- Table related_mangas (Junction table for Manga to Manga relationship)
-CREATE TABLE IF NOT EXISTS related_mangas (
-    id SERIAL PRIMARY KEY,
-    source_manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    related_manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    relationship_type VARCHAR(64) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_manga_relation UNIQUE (source_manga_id, related_manga_id, relationship_type),
-    CONSTRAINT check_manga_not_self CHECK (source_manga_id <> related_manga_id)
+-- =======================================
+-- Groups
+-- =======================================
+CREATE TABLE groups (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(128) NOT NULL UNIQUE,
+    description TEXT,
+    is_open BOOLEAN NOT NULL DEFAULT TRUE,  -- todos podem ver/seguir
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER set_related_mangas_updated_at
-BEFORE UPDATE ON related_mangas
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table manga_genres (Junction table for Manga to Tag relationship)
-CREATE TABLE IF NOT EXISTS manga_genres (
-    id SERIAL PRIMARY KEY,
-    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_manga_genre UNIQUE (manga_id, tag_id)
+CREATE TABLE group_members (
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (group_id, user_id)
 );
-CREATE TRIGGER set_manga_genres_updated_at
-BEFORE UPDATE ON manga_genres
-FOR EACH ROW 
-EXECUTE FUNCTION set_updated_at();
 
--- Table read (Junction table for User to Manga relationship - Reading tracking)
-CREATE TABLE IF NOT EXISTS read (
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    status VARCHAR(50) NOT NULL DEFAULT 'reading',
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+CREATE TABLE group_followers (
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (group_id, user_id)
+);
+
+CREATE TABLE group_roles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    name VARCHAR(64) NOT NULL,                  -- ex: "member", "mod", "admin", "leitor"
+    is_default BOOLEAN NOT NULL DEFAULT FALSE,
+    level INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (group_id, name)
+);
+
+-- =======================================
+-- Comentários e votos
+-- =======================================
+CREATE TABLE comments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    reply_to UUID REFERENCES comments(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE comment_votes (
+    comment_id UUID NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    vote SMALLINT NOT NULL CHECK (vote IN (-1,1)), -- upvote/downvote
+    created_at TIMESTAMPTZ DEFAULT now(),
+    PRIMARY KEY (comment_id, user_id)
+);
+
+-- =======================================
+-- Attachments
+-- =======================================
+CREATE TABLE discussion_attachments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
+    file_url TEXT NOT NULL,
+    file_type BIGINT REFERENCES tags(id),
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE comment_attachments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    comment_id UUID NOT NULL REFERENCES comments(id) ON DTEXT CHECK ELETE CASCADE,
+    file_url TEXT NOT NULL,
+    file_type BIGINT REFERENCES tags(id),  --(file_type IN ('image','video','audio','pdf','other')) DEFAULT 'image',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+
+-- Junctions (sempre no momento da criação precisa ter ao menos 1 tag associada)
+CREATE TABLE discussion_tags (
+    discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- vários usuários podem marcar
+    PRIMARY KEY (discussion_id, tag_id, user_id)
+);
+
+CREATE TABLE manga_tags (
+    manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- vários usuários podem marcar
+    PRIMARY KEY (manga_id, tag_id, user_id)
+);
+
+CREATE TABLE chapter_tags (
+    chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- vários usuários podem marcar
+    PRIMARY KEY (chapter_id, tag_id, user_id)
+);
+
+-- =======================================
+-- Reviews / Reading list
+-- =======================================
+CREATE TABLE reviews (
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    status BIGINT REFERENCES tags(id),      -- (status IN ('planning','reading','completed','paused','dropped')),
+    score NUMERIC(3,1) CHECK (score >= 0 AND score <= 10),
+    review TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, manga_id)
 );
 
-CREATE TRIGGER set_read_updated_at
-BEFORE UPDATE ON read
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table review
-CREATE TABLE IF NOT EXISTS review (
-    review_id SERIAL PRIMARY KEY,
-    users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    score REAL NOT NULL CHECK (score >= 0 AND score <= 10),
-    content TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+CREATE TABLE reads (
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+    status BIGINT REFERENCES tags(id),      -- (status IN ('planning','reading','completed')),
+    score NUMERIC(3,1) CHECK (score >= 0 AND score <= 10),
+    review TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, chapter_id)
 );
 
-CREATE TRIGGER set_review_updated_at
-BEFORE UPDATE ON review
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table chapter_reviews
-CREATE TABLE IF NOT EXISTS chapter_reviews (
-    review_id INT NOT NULL,
-    chapter_id INT NOT NULL,
-    PRIMARY KEY (review_id, chapter_id),
-    FOREIGN KEY (review_id) REFERENCES review(review_id) ON DELETE CASCADE,
-    FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
+-- =======================================
+-- Notificações
+-- =======================================
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
+    last_seen_comment UUID REFERENCES comments(id),
+    created_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE TRIGGER set_chapter_reviews_updated_at
-BEFORE UPDATE ON chapter_reviews
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
--- Table manga_reviews (Junction table for Manga to Review relationship)
-CREATE TABLE IF NOT EXISTS manga_reviews (
-    id SERIAL PRIMARY KEY,
-    manga_id INTEGER NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    review_id INTEGER NOT NULL REFERENCES review(review_id) ON DELETE CASCADE,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_manga_review UNIQUE (manga_id, review_id)
+CREATE TABLE discussion_user_settings (
+    discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    silenced BOOLEAN DEFAULT FALSE,        -- silencia toda a discussion para o user
+    notify_replies BOOLEAN DEFAULT TRUE,   -- se false, não recebe notificação de replies
+    PRIMARY KEY (discussion_id, user_id)
 );
 
-CREATE TRIGGER set_manga_reviews_updated_at
-BEFORE UPDATE ON manga_reviews
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
-CREATE TABLE IF NOT EXISTS page_reviews (
-    id SERIAL PRIMARY KEY,
-    page_id INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
-    review_id INTEGER NOT NULL REFERENCES review(review_id) ON DELETE CASCADE,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_page_review UNIQUE (page_id, review_id)
+-- =======================================
+-- Reports
+-- =======================================
+CREATE TABLE report_status (
+    discussion_id UUID PRIMARY KEY REFERENCES discussions(id) ON DELETE CASCADE,
+    status BIGINT REFERENCES tags(id),      --(status IN ('pending','reviewed','dismissed','accepted')) DEFAULT 'pending',
+    reviewed_by UUID REFERENCES users(id),
+    reviewed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER set_page_reviews_updated_at
-BEFORE UPDATE ON page_reviews
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
+-- References content creator of a manga
+-- External related links to a manga
+-- Staff of a manga
+    
+-- Block users globaly

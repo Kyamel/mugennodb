@@ -1,9 +1,9 @@
 from datetime import datetime, date
 from uuid import uuid4
-from mugennocore.model.manga import Manga
+from mugennocore.model.mangas import Manga
 from .chapter_endpoints import parse_key_value_args
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.mangas import (
+from mugennodb.database.controller.mangas import (
     get_manga_by_id,
     insert_manga,
     search_mangas_by_title,

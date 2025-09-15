@@ -87,6 +87,38 @@ CREATE TABLE manga_external_links (
     UNIQUE (manga_id, url)
 );
 
+CREATE TABLE manga_relationship_types (
+    id SMALLSERIAL PRIMARY KEY,
+    name VARCHAR(32) NOT NULL UNIQUE,
+    description TEXT,
+    is_recursive BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE manga_relationships (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    target_manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
+    relationship_type_id SMALLINT NOT NULL REFERENCES manga_relationship_types(id),
+    description TEXT,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    is_approved BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now(),
+    
+    -- Um mangá não pode ter o mesmo relacionamento múltiplas vezes
+    UNIQUE(source_manga_id, target_manga_id, relationship_type_id),
+    
+    -- Prevenir autorrelacionamento exceto para tipos recursivos
+    CONSTRAINT no_self_relationship_unless_recursive CHECK (
+        source_manga_id != target_manga_id OR 
+        (source_manga_id = target_manga_id AND 
+         relationship_type_id IN (
+             SELECT id FROM manga_relationship_types WHERE is_recursive = TRUE
+         ))
+    )
+);
+
 CREATE TABLE chapters (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
@@ -345,6 +377,10 @@ CREATE INDEX idx_mangas_user ON mangas(user_id);
 CREATE INDEX idx_chapters_user ON chapters(user_id);
 CREATE INDEX idx_discussions_user ON discussions(user_id);
 CREATE INDEX idx_comments_user ON comments(user_id);
+CREATE INDEX idx_manga_relationships_source ON manga_relationships(source_manga_id);
+CREATE INDEX idx_manga_relationships_target ON manga_relationships(target_manga_id);
+CREATE INDEX idx_manga_relationships_type ON manga_relationships(relationship_type_id);
+CREATE INDEX idx_manga_relationships_user ON manga_relationships(user_id);
 
 -- Índices para otimizar as queries dos triggers
 CREATE INDEX idx_discussion_votes_discussion ON discussion_votes(discussion_id);

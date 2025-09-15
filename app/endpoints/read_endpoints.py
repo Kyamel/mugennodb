@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import cast
 from mugennocore.model.read import Read
-from mugennodb.database.interface.read import (
+from mugennodb.database.controller.read import (
     insert_read,
     get_read,
     update_read_status,

@@ -1,10 +1,10 @@
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.manga_genres import (
+from mugennodb.database.controller.manga_genres import (
     add_genre_to_manga,
     get_genres_for_manga,
 )
-from mugennodb.database.interface.mangas import get_manga_by_id
-from mugennodb.database.interface.tags import insert_tag
+from mugennodb.database.controller.mangas import get_manga_by_id
+from mugennodb.database.controller.tags import insert_tag
 from mugennocore.model.tag import Tag
 from datetime import datetime
 from .chapter_endpoints import parse_key_value_args

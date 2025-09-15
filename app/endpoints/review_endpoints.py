@@ -1,7 +1,7 @@
 from datetime import datetime
 from mugennocore.model.reviews import Review
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.reviews import insert_manga_review, list_manga_reviews
+from mugennodb.database.controller.reviews import insert_manga_review, list_manga_reviews
 
 COMMANDS = {
     "insert_review": {

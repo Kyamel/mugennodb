@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 from mugennocore.model.manga_review import MangaReview
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.manga_review import insert_manga_review
+from mugennodb.database.controller.manga_review import insert_manga_review
 
 
 COMMANDS = {

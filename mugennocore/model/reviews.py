@@ -1,25 +1,24 @@
-from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
+from pydantic.dataclasses import dataclass
+
+from mugennocore.model.enums import EReadingStatus
 
 
 @dataclass(slots=True)
-class Review:
-    """Represents a review written by a user."""
-
-    review_id: int  # Primary Key
-    users_id: int  # Foreign Key
-    score: float
-    content: str
-    created_at: datetime
-    updated_at: datetime
+class Reviews:
+    user_id: UUID
+    manga_id: UUID
+    status: EReadingStatus = EReadingStatus.PLANNING
+    score: Optional[int] = None
+    review: Optional[str] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
 
     def __str__(self) -> str:
-        return f"Review {self.review_id} by User {self.users_id} - Score: {self.score}"
+        return f"Reviews({self.status.value} - Score: {self.score or 'N/A'})"
 
     def __repr__(self) -> str:
-        return (
-            f"Review(review_id={self.review_id}, user_id={self.users_id}, "
-            f"score={self.score}, content={self.content!r}, "
-            f"created_at={self.created_at}, updated_at={self.updated_at})"
-        )
+        return f"Reviews(user_id={self.user_id}, manga_id={self.manga_id}, status='{self.status.value}', score={self.score})"

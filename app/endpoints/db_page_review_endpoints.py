@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 from mugennocore.model.page_review import PageReview
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.page_review import insert_page_review
+from mugennodb.database.controller.page_review import insert_page_review
 
 
 COMMANDS = {

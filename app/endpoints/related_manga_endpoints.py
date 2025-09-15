@@ -1,7 +1,7 @@
 from datetime import datetime
 from mugennocore.model.related_manga import RelatedManga
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.related_mangas import (
+from mugennodb.database.controller.related_mangas import (
     add_relationship,
     get_related_mangas_by_source_id,
 )

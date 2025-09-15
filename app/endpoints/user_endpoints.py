@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import uuid4
-from mugennocore.model.user import User
+from mugennocore.model.users import User
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.users import get_user_by_id, insert_user
+from mugennodb.database.controller.users import get_user_by_id, insert_user
 
 # Comandos disponíveis
 COMMANDS = {

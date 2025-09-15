@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 from mugennocore.model.page import Page
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.pages import (
+from mugennodb.database.controller.pages import (
     get_page_by_chapter_and_number,
     insert_page,
 )

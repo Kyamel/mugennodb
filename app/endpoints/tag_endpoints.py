@@ -1,7 +1,7 @@
 from datetime import datetime
 from mugennocore.model.tag import Tag
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.tags import (
+from mugennodb.database.controller.tags import (
     get_all_tags,
     insert_tag,
 )

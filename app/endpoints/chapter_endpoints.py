@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import uuid4
-from mugennocore.model.chapter import Chapter
+from mugennocore.model.chapters import Chapter
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.chapters import (
+from mugennodb.database.controller.chapters import (
     get_all_chapters_by_manga_id,
     insert_chapter,
 )

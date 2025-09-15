@@ -1,5 +1,5 @@
 from mugennocore.model.chapter_review import ChapterReview
-from mugennodb.database.interface.chapter_review import insert_chapter_review
+from mugennodb.database.controller.chapter_review import insert_chapter_review
 
 COMMANDS = {
     "insert_chapter_review": {

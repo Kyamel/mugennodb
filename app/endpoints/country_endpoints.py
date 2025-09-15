@@ -1,9 +1,9 @@
 from datetime import datetime
 
 # Importe o modelo e a interface que você criou
-from mugennocore.model.country import Country
+from mugennocore.model.countries import Country
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.interface.countries import (
+from mugennodb.database.controller.countries import (
     get_all_countries,
     get_country_by_locale,
     insert_country,

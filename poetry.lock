@@ -703,6 +703,21 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pydantic-partial"
+version = "0.9.0"
+description = "Create partial models from your pydantic models. Partial models may allow None for certain or all fields."
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "pydantic_partial-0.9.0-py3-none-any.whl", hash = "sha256:7e6d5c9178445ec8a66779cc349d0b65440ff2dcdd350e9064482d6be2643984"},
+    {file = "pydantic_partial-0.9.0.tar.gz", hash = "sha256:c512c1888b17d377cdf3f3d56c76df8453b6dc68f942b4a0dba48427037c019c"},
+]
+
+[package.dependencies]
+pydantic = ">=2.0.0,<3.0.0"
+
+[[package]]
 name = "pygments"
 version = "2.19.2"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -822,5 +837,5 @@ files = [
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.12"
-content-hash = "30737ab3b0bb0aac3a1e5c87fe867c13e2d3c87ceba98c270ffcc907eb316056"
+python-versions = ">=3.12,<4.0"
+content-hash = "b16070827c1a8beed3cc385144e691efb55f035f9e359183e1e59e194c1bd467"

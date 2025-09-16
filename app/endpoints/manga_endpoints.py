@@ -1,13 +1,12 @@
 from datetime import datetime, date
-from uuid import uuid4
-from mugennocore.model.mangas import Manga
-from .chapter_endpoints import parse_key_value_args
+from uuid import UUID, uuid4
+from mugennocore.model.enums import EAgeRating, EMangaStatus
+from mugennocore.model.mangas import Mangas
 from mugennodb.conection.database_protocol import DatabaseProtocol
-from mugennodb.database.controller.mangas import (
+from mugennodb.repositories.mangas_repo import (
     get_manga_by_id,
-    insert_manga,
-    search_mangas_by_title,
-    get_mangas_by_tag_name,
+    create_manga,
+    get_mangas_by_title,
 )
 
 COMMANDS = {
@@ -16,22 +15,43 @@ COMMANDS = {
         "args": ["manga_id:int"],
         "example": "get_manga manga_id=789",
     },
-    "insert_manga": {
+    "create_manga": {
         "description": "Create test manga with optional title args",
         "args": ["--title_english:str?", "--title_native:str?", "--mal_id:int?"],
-        "example": "insert_manga --title_english='Bleach' --mal_id=321",
+        "example": "create_manga --title_english='Bleach' --mal_id=321",
     },
     "search_manga": {
         "description": "Search manga by title with pagination.",
         "args": ["title:str", "--limit:int?", "--offset:int?"],
         "example": "search_manga title=Hero --limit=5",
     },
-    "filter_by_tag": {
-        "description": "Filter manga by tag with pagination.",
-        "args": ["tag:str", "--limit:int?", "--offset:int?"],
-        "example": "filter_by_tag tag=Ação --limit=10",
-    },
 }
+
+def parse_key_value_args(parts: list[str]) -> dict[str, str]:
+    """
+    Converte partes como ["manga_id=123", "--limit=10"] em {"manga_id": "123", "limit": "10"}
+    """
+    args = {}
+    for part in parts:
+        if "=" in part:
+            key, value = part.lstrip("-").split("=", 1)
+            args[key] = value
+    return args
+
+def parse_manga_id(manga_id_input) -> UUID:
+    """Converte input para UUID, aceitando inteiros ou strings UUID"""
+    try:
+        # Tenta converter diretamente se for string UUID
+        return UUID(manga_id_input)
+    except (ValueError, TypeError):
+        try:
+            # Se for inteiro, converte para UUID "fácil"
+            number = int(manga_id_input)
+            hex_str = f"{number:032x}"
+            return UUID(hex_str)
+        except (ValueError, TypeError):
+            raise ValueError("manga_id must be a valid UUID or integer")
+
 
 
 async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
@@ -56,15 +76,15 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
 
     if cmd == "get_manga":
         try:
-            manga_id = int(args["manga_id"])
+            manga_id = parse_manga_id(args["manga_id"])
         except ValueError:
             print("manga_id must be an integer.")
             return
 
         manga = await get_manga_by_id(db, manga_id)
-        print(manga or "Manga not found")
+        print(manga or "Mangas not found")
 
-    elif cmd == "insert_manga":
+    elif cmd == "create_manga":
         title_english = args.get("title_english", "Mugen Hero")
         title_native = args.get("title_native", "無限ヒーロー")
 
@@ -74,22 +94,24 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             print("mal_id must be an integer.")
             return
 
-        manga = Manga(
-            id=0,
-            country_id=4,
+        manga = Mangas(
+            id=uuid4(),
+            country_id=1,
+            user_id=UUID("00000000-0000-0000-0000-000000000001"),
             title_english=title_english,
             title_native=title_native,
-            release_date=date(2023, 1, 1),
-            finish_date=None,
-            active_status="ongoing",
-            comic_type="manga",
-            cover=uuid4(),
+            release_date=date(1999, 9, 21),
+            finish_date=date(2014, 11, 10),
+            age_rating=EAgeRating.PG12,
+            status=EMangaStatus.COMPLETED,
+            comic_type_id=1,
             mal_id=mal_id,
+            kitsu_id=mal_id,
             created_at=datetime.now(),
-            updated_at=datetime.now(),
+            updated_at=datetime.now()
         )
-        mid = await insert_manga(db, manga)
-        print(f"Manga inserted with ID {mid}")
+        mid = await create_manga(db, manga)
+        print(f"Mangas inserted with ID {mid}")
 
     elif cmd == "search_manga":
         title = args.get("title")
@@ -100,29 +122,11 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         limit = int(args.get("limit", 10))
         offset = int(args.get("offset", 0))
 
-        mangas = await search_mangas_by_title(db, title, limit, offset)
+        mangas = await get_mangas_by_title(db, title, limit, offset)
         if not mangas:
             print(f"No manga found with the title '{title}'.")
             return
 
         print(f"--- Search results for '{title}' ---")
-        for m in mangas:
-            print(f"  ID: {m.id} - {m.title_english}")
-
-    elif cmd == "filter_by_tag":
-        tag = args.get("tag")
-        if not tag:
-            print("The 'tag' argument is required.")
-            return
-
-        limit = int(args.get("limit", 10))
-        offset = int(args.get("offset", 0))
-
-        mangas = await get_mangas_by_tag_name(db, tag, limit, offset)
-        if not mangas:
-            print(f"No manga found with the tag '{tag}'.")
-            return
-
-        print(f"--- Mangas with the tag '{tag}' ---")
         for m in mangas:
             print(f"  ID: {m.id} - {m.title_english}")

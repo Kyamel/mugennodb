@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 import asyncpg  # type: ignore
-from typing import Any, AsyncContextManager
-from contextlib import AbstractAsyncContextManager
+from typing import Any
 
 
 class AsyncPGDatabase:

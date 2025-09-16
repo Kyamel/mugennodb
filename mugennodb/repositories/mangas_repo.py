@@ -1,7 +1,7 @@
 from typing import Optional, Any
 from uuid import UUID
 from datetime import date
-from mugennocore.model.enums import EMangaStatus
+from mugennocore.model.enums import EAgeRating, EMangaStatus
 from mugennocore.model.mangas import Mangas
 from mugennodb.conection.database_protocol import DatabaseProtocol
 
@@ -12,33 +12,33 @@ from mugennodb.conection.database_protocol import DatabaseProtocol
 async def get_manga_by_id(db: DatabaseProtocol, manga_id: UUID) -> Optional[Mangas]:
     """Busca um mangá pelo ID"""
     query = """
-        SELECT id, country_id, user_id, title_english, title_native, synopsis,
+        SELECT id, country_id, user_id, title_english, title_native,
                release_date, finish_date, age_rating, status, comic_type_id,
                mal_id, kitsu_id, created_at, updated_at
         FROM mangas 
         WHERE id = $1
     """
     row = await db.fetchrow(query, manga_id)
-    return Mangas(**dict(row)) if row else None
+    return Mangas(**row) if row else None
 
 
 async def get_manga_by_mal_id(db: DatabaseProtocol, mal_id: int) -> Optional[Mangas]:
     """Busca um mangá pelo ID do MyAnimelist"""
     query = """
-        SELECT id, country_id, user_id, title_english, title_native, synopsis,
+        SELECT id, country_id, user_id, title_english, title_native,
                release_date, finish_date, age_rating, status, comic_type_id,
                mal_id, kitsu_id, created_at, updated_at
         FROM mangas 
         WHERE mal_id = $1
     """
     row = await db.fetchrow(query, mal_id)
-    return Mangas(**dict(row)) if row else None
+    return Mangas(**row) if row else None
 
 
 async def get_manga_by_kitsu_id(db: DatabaseProtocol, kitsu_id: int) -> Optional[Mangas]:
     """Busca um mangá pelo ID do Kitsu"""
     query = """
-        SELECT id, country_id, user_id, title_english, title_native, synopsis,
+        SELECT id, country_id, user_id, title_english, title_native,
                release_date, finish_date, age_rating, status, comic_type_id,
                mal_id, kitsu_id, created_at, updated_at
         FROM mangas 
@@ -56,7 +56,7 @@ async def get_mangas_by_title(
 ) -> list[Mangas]:
     """Busca mangás por título (case-insensitive)"""
     query = """
-        SELECT id, country_id, user_id, title_english, title_native, synopsis,
+        SELECT id, country_id, user_id, title_english, title_native,
                release_date, finish_date, age_rating, status, comic_type_id,
                mal_id, kitsu_id, created_at, updated_at
         FROM mangas 
@@ -65,7 +65,7 @@ async def get_mangas_by_title(
         LIMIT $2 OFFSET $3
     """
     rows = await db.fetch(query, f"%{title_query}%", limit, offset)
-    return [Mangas(**dict(row)) for row in rows]
+    return [Mangas(**row) for row in rows]
 
 
 async def get_mangas_by_status(
@@ -76,7 +76,7 @@ async def get_mangas_by_status(
 ) -> list[Mangas]:
     """Busca mangás por status"""
     query = """
-        SELECT id, country_id, user_id, title_english, title_native, synopsis,
+        SELECT id, country_id, user_id, title_english, title_native,
                release_date, finish_date, age_rating, status, comic_type_id,
                mal_id, kitsu_id, created_at, updated_at
         FROM mangas 
@@ -85,7 +85,8 @@ async def get_mangas_by_status(
         LIMIT $2 OFFSET $3
     """
     rows = await db.fetch(query, status.value, limit, offset)
-    return [Mangas(**dict(row)) for row in rows]
+    return [Mangas(**row) for row in rows]
+
 
 
 async def get_mangas_by_author(
@@ -96,7 +97,7 @@ async def get_mangas_by_author(
 ) -> list[Mangas]:
     """Busca mangás por autor/staff"""
     query = """
-        SELECT m.id, m.country_id, m.user_id, m.title_english, m.title_native, m.synopsis,
+        SELECT m.id, m.country_id, m.user_id, m.title_english, m.title_native,
                m.release_date, m.finish_date, m.age_rating, m.status, m.comic_type_id,
                m.mal_id, m.kitsu_id, m.created_at, m.updated_at
         FROM mangas m
@@ -107,7 +108,7 @@ async def get_mangas_by_author(
         LIMIT $3 OFFSET $4
     """
     rows = await db.fetch(query, author_id, f"%{author_id}%", limit, offset)
-    return [Mangas(**dict(row)) for row in rows]
+    return [Mangas(**row) for row in rows]
 
 
 async def get_recent_mangas(
@@ -117,7 +118,7 @@ async def get_recent_mangas(
 ) -> list[Mangas]:
     """Busca mangás mais recentes"""
     query = """
-        SELECT id, country_id, user_id, title_english, title_native, synopsis,
+        SELECT id, country_id, user_id, title_english, title_native,
                release_date, finish_date, age_rating, status, comic_type_id,
                mal_id, kitsu_id, created_at, updated_at
         FROM mangas 
@@ -125,7 +126,7 @@ async def get_recent_mangas(
         LIMIT $1 OFFSET $2
     """
     rows = await db.fetch(query, limit, offset)
-    return [Mangas(**dict(row)) for row in rows]
+    return [Mangas(**row) for row in rows]
 
 # =======================================
 # Funções de Criação (Create)
@@ -135,12 +136,12 @@ async def create_manga(db: DatabaseProtocol, manga_data: Mangas) -> Mangas:
     """Cria um novo mangá"""
     query = """
         INSERT INTO mangas (
-            country_id, user_id, title_english, title_native, synopsis,
+            country_id, user_id, title_english, title_native,
             release_date, finish_date, age_rating, status, comic_type_id,
             mal_id, kitsu_id
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING id, country_id, user_id, title_english, title_native, synopsis,
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        RETURNING id, country_id, user_id, title_english, title_native,
                   release_date, finish_date, age_rating, status, comic_type_id,
                   mal_id, kitsu_id, created_at, updated_at
     """
@@ -158,19 +159,19 @@ async def create_manga(db: DatabaseProtocol, manga_data: Mangas) -> Mangas:
         manga_data.mal_id,
         manga_data.kitsu_id
     )
-    return Mangas(**dict(row))
+    return Mangas(**row)
 
 
 async def create_manga_with_id(db: DatabaseProtocol, manga_data: Mangas) -> Mangas:
     """Cria um novo mangá com ID específico (útil para testes)"""
     query = """
         INSERT INTO mangas (
-            id, country_id, user_id, title_english, title_native, synopsis,
+            id, country_id, user_id, title_english, title_native,
             release_date, finish_date, age_rating, status, comic_type_id,
             mal_id, kitsu_id
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-        RETURNING id, country_id, user_id, title_english, title_native, synopsis,
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING id, country_id, user_id, title_english, title_native,
                   release_date, finish_date, age_rating, status, comic_type_id,
                   mal_id, kitsu_id, created_at, updated_at
     """
@@ -189,7 +190,7 @@ async def create_manga_with_id(db: DatabaseProtocol, manga_data: Mangas) -> Mang
         manga_data.mal_id,
         manga_data.kitsu_id
     )
-    return Mangas(**dict(row))
+    return Mangas(**row)
 
 # =======================================
 # Funções de Atualização (Update)
@@ -217,13 +218,13 @@ async def update_manga(db: DatabaseProtocol, manga_id: UUID, updates: dict[str, 
         UPDATE mangas 
         SET {', '.join(set_clauses)}, updated_at = NOW()
         WHERE id = ${i}
-        RETURNING id, country_id, user_id, title_english, title_native, synopsis,
+        RETURNING id, country_id, user_id, title_english, title_native,
                   release_date, finish_date, age_rating, status, comic_type_id,
                   mal_id, kitsu_id, created_at, updated_at
     """
     
     row = await db.fetchrow(query, *values)
-    return Mangas(**dict(row)) if row else None
+    return Mangas(**row) if row else None
 
 
 async def update_manga_status(
@@ -237,12 +238,12 @@ async def update_manga_status(
         UPDATE mangas 
         SET status = $1, finish_date = $2, updated_at = NOW()
         WHERE id = $3
-        RETURNING id, country_id, user_id, title_english, title_native, synopsis,
+        RETURNING id, country_id, user_id, title_english, title_native,
                   release_date, finish_date, age_rating, status, comic_type_id,
                   mal_id, kitsu_id, created_at, updated_at
     """
     row = await db.fetchrow(query, status.value, finish_date, manga_id)
-    return Mangas(**dict(row)) if row else None
+    return Mangas(**row) if row else None
 
 # =======================================
 # Funções de Exclusão (Delete)
@@ -297,26 +298,16 @@ async def manga_title_exists(
     db: DatabaseProtocol, 
     title_english: str, 
     title_native: str,
-    exclude_id: Optional[UUID] = None
 ) -> bool:
     """Verifica se um título de mangá já existe"""
-    if exclude_id:
-        query = """
-            SELECT EXISTS(
-                SELECT 1 FROM mangas 
-                WHERE (title_english = $1 OR title_native = $2) 
-                AND id != $3
-            )
-        """
-        return await db.fetchval(query, title_english, title_native, exclude_id)
-    else:
-        query = """
-            SELECT EXISTS(
-                SELECT 1 FROM mangas 
-                WHERE title_english = $1 OR title_native = $2
-            )
-        """
-        return await db.fetchval(query, title_english, title_native)
+
+    query = """
+        SELECT EXISTS(
+            SELECT 1 FROM mangas 
+            WHERE title_english = $1 OR title_native = $2
+        )
+    """
+    return await db.fetchval(query, title_english, title_native)
 
 
 async def manga_external_id_exists(

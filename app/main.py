@@ -7,27 +7,14 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.completion import (
     NestedCompleter,
-    WordCompleter,
     Completer,
     Completion,
 )
 from typing import Dict, List
 
 from app.endpoints import (
-    user_endpoints,
     manga_endpoints,
-    chapter_endpoints,
-    page_endpoints,
-    db_admin_endpoints,
-    tag_endpoints,
-    country_endpoints,
-    related_manga_endpoints,
-    manga_genre_endpoints,
-    review_endpoints,
-    db_chapter_review_endpoints,
-    read_endpoints,
-    db_mangaReview_endpoints,
-    db_page_review_endpoints,
+    db_admin_endpoints
 )
 from app.load_env import get_database_dsn
 from mugennodb.conection.asyncpg_database import AsyncPGDatabase
@@ -143,20 +130,8 @@ class HybridCompleter(Completer):
 
 def setup_completer():
     all_commands = {
-        **user_endpoints.COMMANDS,
         **manga_endpoints.COMMANDS,
-        **chapter_endpoints.COMMANDS,
-        **page_endpoints.COMMANDS,
         **db_admin_endpoints.COMMANDS,
-        **tag_endpoints.COMMANDS,
-        **country_endpoints.COMMANDS,
-        **related_manga_endpoints.COMMANDS,
-        **manga_genre_endpoints.COMMANDS,
-        **review_endpoints.COMMANDS,
-        **db_chapter_review_endpoints.COMMANDS,
-        **read_endpoints.COMMANDS,
-        **db_mangaReview_endpoints.COMMANDS,
-        **db_page_review_endpoints.COMMANDS,
     }
 
     all_commands.update(
@@ -203,32 +178,8 @@ async def repl():
                 # Route commands to appropriate modules
                 if parts[0] in db_admin_endpoints.COMMANDS:
                     await db_admin_endpoints.handle_command(db, parts)
-                elif parts[0] in user_endpoints.COMMANDS:
-                    await user_endpoints.handle_command(db, parts)
                 elif parts[0] in manga_endpoints.COMMANDS:
                     await manga_endpoints.handle_command(db, parts)
-                elif parts[0] in chapter_endpoints.COMMANDS:
-                    await chapter_endpoints.handle_command(db, parts)
-                elif parts[0] in page_endpoints.COMMANDS:
-                    await page_endpoints.handle_command(db, parts)
-                elif parts[0] in tag_endpoints.COMMANDS:
-                    await tag_endpoints.handle_command(db, parts)
-                elif parts[0] in country_endpoints.COMMANDS:
-                    await country_endpoints.handle_command(db, parts)
-                elif parts[0] in related_manga_endpoints.COMMANDS:
-                    await related_manga_endpoints.handle_command(db, parts)
-                elif parts[0] in manga_genre_endpoints.COMMANDS:
-                    await manga_genre_endpoints.handle_command(db, parts)
-                elif parts[0] in review_endpoints.COMMANDS:
-                    await review_endpoints.handle_command(db, parts)
-                elif parts[0] in db_chapter_review_endpoints.COMMANDS:
-                    await db_chapter_review_endpoints.handle_command(db, parts)
-                elif parts[0] in read_endpoints.COMMANDS:
-                    await read_endpoints.handle_command(db, parts)
-                elif parts[0] in db_mangaReview_endpoints.COMMANDS:
-                    await db_mangaReview_endpoints.handle_command(db, parts)
-                elif parts[0] in db_page_review_endpoints.COMMANDS:
-                    await db_page_review_endpoints.handle_command(db, parts)
                 else:
                     print("Invalid command. Type 'help' for available commands.")
 

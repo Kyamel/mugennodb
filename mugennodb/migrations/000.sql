@@ -14,7 +14,7 @@ CREATE TABLE users (
     username VARCHAR(64) NOT NULL UNIQUE,
     email VARCHAR(128) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    role VARCHAR(16) NOT NULL CHECK (role IN ('admin', 'moderator', 'user')) DEFAULT 'user',
+    role VARCHAR(16) NOT NULL CHECK (role IN ('ADMIN', 'MODERATOR', 'USER')) DEFAULT 'USER',
     nickname VARCHAR(128),
     profile_bio TEXT,
     profile_banner TEXT,
@@ -52,7 +52,9 @@ CREATE TABLE user_blocks (
 CREATE TABLE comic_types (
     id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(32) UNIQUE NOT NULL,
-    description TEXT
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE mangas (
@@ -63,8 +65,8 @@ CREATE TABLE mangas (
     title_native TEXT NOT NULL,
     release_date DATE NOT NULL,
     finish_date DATE,
-    age_rating VARCHAR(16) NOT NULL CHECK (age_rating IN ('G', 'PG-12', 'R15+', 'R18+')) DEFAULT 'ongoing',
-    status VARCHAR(16) NOT NULL CHECK (status IN ('ongoing', 'completed', 'hiatus', 'cancelled')) DEFAULT 'ongoing',
+    age_rating VARCHAR(16) NOT NULL CHECK (age_rating IN ('G', 'PG12', 'R15', 'R18')) DEFAULT 'ONGOING',
+    status VARCHAR(16) NOT NULL CHECK (status IN ('ONGOING', 'COMPLETED', 'HIATUS', 'CANCELLED')) DEFAULT 'ONGOING',
     comic_type_id SMALLINT NOT NULL REFERENCES comic_types(id),
     mal_id INTEGER UNIQUE,
     kitsu_id INTEGER UNIQUE,
@@ -76,7 +78,7 @@ CREATE TABLE mangas (
 CREATE TABLE manga_external_links (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    link_type VARCHAR(32) NOT NULL CHECK (link_type IN ('purchase', 'official', 'community', 'information')),
+    link_type VARCHAR(32) NOT NULL CHECK (link_type IN ('PURCHASE', 'OFFICIAL', 'COMMUNITY', 'INFORMATION')),
     url TEXT NOT NULL,
     title VARCHAR(128),
     description TEXT,
@@ -92,7 +94,8 @@ CREATE TABLE manga_relationship_types (
     name VARCHAR(32) NOT NULL UNIQUE,
     description TEXT,
     is_recursive BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT now()
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE manga_relationships (
@@ -107,16 +110,7 @@ CREATE TABLE manga_relationships (
     updated_at TIMESTAMPTZ DEFAULT now(),
     
     -- Um mangá não pode ter o mesmo relacionamento múltiplas vezes
-    UNIQUE(source_manga_id, target_manga_id, relationship_type_id),
-    
-    -- Prevenir autorrelacionamento exceto para tipos recursivos
-    CONSTRAINT no_self_relationship_unless_recursive CHECK (
-        source_manga_id != target_manga_id OR 
-        (source_manga_id = target_manga_id AND 
-         relationship_type_id IN (
-             SELECT id FROM manga_relationship_types WHERE is_recursive = TRUE
-         ))
-    )
+    UNIQUE(source_manga_id, target_manga_id, relationship_type_id)
 );
 
 CREATE TABLE chapters (
@@ -151,8 +145,10 @@ CREATE TABLE staff_profiles (
 
 CREATE TABLE staff_roles (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(32) UNIQUE NOT NULL CHECK (name IN ('author', 'illustrator', 'publisher', 'editor', 'translator')),
-    description TEXT
+    name VARCHAR(32) UNIQUE NOT NULL CHECK (name IN ('AUTHOR', 'ILLUSTRRATOR', 'PUBLISHER', 'EDITOR', 'TRANSLATOR')),
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE manga_staff (
@@ -192,6 +188,7 @@ CREATE TABLE group_members (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     is_moderator BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (group_id, user_id)
 );
 
@@ -220,6 +217,7 @@ CREATE TABLE discussion_votes (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     vote SMALLINT NOT NULL CHECK (vote IN (-1, 1)),
     created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (discussion_id, user_id)
 );
 
@@ -227,6 +225,8 @@ CREATE TABLE discussion_reads (
     discussion_id UUID NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     last_read_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (discussion_id, user_id)
 );
 
@@ -249,6 +249,7 @@ CREATE TABLE comment_votes (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     vote SMALLINT NOT NULL CHECK (vote IN (-1, 1)),
     created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (comment_id, user_id)
 );
 
@@ -259,7 +260,9 @@ CREATE TABLE attachment_types (
     id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(32) UNIQUE NOT NULL,
     mime_type VARCHAR(64),
-    icon_url TEXT
+    icon_url TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE attachments (
@@ -270,7 +273,8 @@ CREATE TABLE attachments (
     file_url TEXT NOT NULL,
     type_id SMALLINT NOT NULL REFERENCES attachment_types(id),
     file_size BIGINT,
-    created_at TIMESTAMPTZ DEFAULT now()
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- =======================================
@@ -281,6 +285,7 @@ CREATE TABLE discussion_tags (
     tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (discussion_id, tag_id, user_id)
 );
 
@@ -289,6 +294,7 @@ CREATE TABLE manga_tags (
     tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (manga_id, tag_id, user_id)
 );
 
@@ -297,6 +303,7 @@ CREATE TABLE chapter_tags (
     tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (chapter_id, tag_id, user_id)
 );
 
@@ -306,7 +313,7 @@ CREATE TABLE chapter_tags (
 CREATE TABLE reviews (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     manga_id UUID NOT NULL REFERENCES mangas(id) ON DELETE CASCADE,
-    status VARCHAR(16) NOT NULL CHECK (status IN ('planning','reading','completed','dropped')) DEFAULT 'planning',
+    status VARCHAR(16) NOT NULL CHECK (status IN ('PLANNING','READING','COMPLETED','DROPPED')) DEFAULT 'PLANNING',
     score SMALLINT CHECK (score >= 0 AND score <= 10),
     review TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -317,7 +324,7 @@ CREATE TABLE reviews (
 CREATE TABLE reading_progress (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
-    status VARCHAR(16) NOT NULL CHECK (status IN  ('planning','reading','completed')) DEFAULT 'planning',
+    status VARCHAR(16) NOT NULL CHECK (status IN  ('PLANNING','READING','COMPLETED')) DEFAULT 'PLANNING',
     score SMALLINT CHECK (score >= 0 AND score <= 10),
     review TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -338,7 +345,8 @@ CREATE TABLE notifications (
     content TEXT,
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     --last_seen_comment UUID REFERENCES comments(id),
-    created_at TIMESTAMPTZ DEFAULT now()
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- =======================================
@@ -350,7 +358,7 @@ CREATE TABLE flags (
     target_id UUID NOT NULL,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     reason TEXT NOT NULL,
-    status VARCHAR(16) NOT NULL CHECK (status IN ('pending', 'reviewed', 'dismissed', 'accepted')) DEFAULT 'pending',
+    status VARCHAR(16) NOT NULL CHECK (status IN ('PENDING', 'REVIEWED', 'DISMISSED', 'ACCEPTED')) DEFAULT 'PENDING',
     reviewed_by UUID REFERENCES users(id),
     reviewed_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -362,7 +370,7 @@ CREATE TABLE flags (
 -- Índices para melhor performance
 -- =======================================
 CREATE INDEX idx_mangas_status ON mangas(status);
-CREATE INDEX idx_mangas_type ON mangas(comic_type);
+CREATE INDEX idx_mangas_type ON mangas(comic_type_id);
 CREATE INDEX idx_discussions_manga ON discussions(manga_id);
 CREATE INDEX idx_discussions_group ON discussions(group_id);
 CREATE INDEX idx_chapters_manga ON chapters(manga_id);

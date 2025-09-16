@@ -1,17 +1,5 @@
 from app.endpoints import (
-    user_endpoints,
     manga_endpoints,
-    chapter_endpoints,
-    page_endpoints,
-    db_admin_endpoints,
-    tag_endpoints,
-    country_endpoints,
-    related_manga_endpoints,
-    manga_genre_endpoints,
-    review_endpoints,
-    db_chapter_review_endpoints,
-    db_mangaReview_endpoints,
-    db_page_review_endpoints,
 )
 
 
@@ -34,27 +22,8 @@ def show_help() -> None:
     GREEN = "\033[32m"
     RESET = "\033[0m"
 
-    print_command_section("Admin Commands", db_admin_endpoints.COMMANDS, GREEN)
-    print_command_section("User Commands", user_endpoints.COMMANDS, GREEN)
     print_command_section("Manga Commands", manga_endpoints.COMMANDS, GREEN)
-    print_command_section("Chapter Commands", chapter_endpoints.COMMANDS, GREEN)
-    print_command_section("Page Commands", page_endpoints.COMMANDS, GREEN)
-    print_command_section("Tag Commands", tag_endpoints.COMMANDS, GREEN)
-    print_command_section("Country Commands", country_endpoints.COMMANDS, GREEN)
-    print_command_section(
-        "Related Manga Commands", related_manga_endpoints.COMMANDS, GREEN
-    )
-    print_command_section("Manga Genre Commands", manga_genre_endpoints.COMMANDS, GREEN)
-    print_command_section("Review", review_endpoints.COMMANDS, GREEN)
-    print_command_section(
-        "Chapter Review Commands", db_chapter_review_endpoints.COMMANDS, GREEN
-    )
-    print_command_section(
-        "Manga Review Commands", db_mangaReview_endpoints.COMMANDS, GREEN
-    )
-    print_command_section(
-        "Page Review Commands", db_page_review_endpoints.COMMANDS, GREEN
-    )
+  
 
     print(f"\n{GREEN}General Commands:{RESET}")
     print(f"  {BLUE}help".ljust(20) + f"{RESET}Show this help message")

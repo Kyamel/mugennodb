@@ -2,7 +2,7 @@ import os
 from mugennodb.conection.database_protocol import DatabaseProtocol
 
 BASE_DIR = os.path.dirname(__file__)
-MIGRATION_DIR = os.path.join(BASE_DIR, "database", "migrations")
+MIGRATION_DIR = os.path.join(BASE_DIR, "migrations")
 
 
 async def create_database_schema(db: DatabaseProtocol) -> None:

@@ -1,16 +1,20 @@
+from dataclasses import dataclass, field
 from datetime import datetime
-from pydantic.dataclasses import dataclass
+from typing import Optional
 
-
-@dataclass(slots=True)
-class Countries:
+@dataclass(slots=True, frozen=True)
+class CountriesRead:
     id: int
     locale_code: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
 
-    def __str__(self) -> str:
-        return f"Countries({self.locale_code})"
+@dataclass(slots=True, frozen=True)
+class CountriesCreate:
+    locale_code: str
 
-    def __repr__(self) -> str:
-        return f"Countries(id={self.id}, locale_code='{self.locale_code}', created_at={self.created_at}, updated_at={self.updated_at})"
+@dataclass(slots=True, frozen=True)
+class CountriesUpdate:
+    id: int
+    locale_code: Optional[str] = None
+    updated_at: datetime = field(default_factory=datetime.now)

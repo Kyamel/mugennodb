@@ -2,7 +2,7 @@ from dataclasses import field
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from pydantic.dataclasses import dataclass
+from dataclasses import dataclass
 
 from mugennocore.model.enums import EReadingStatus
 

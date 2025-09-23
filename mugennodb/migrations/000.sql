@@ -22,7 +22,7 @@ CREATE TABLE users (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_banned BOOLEAN NOT NULL DEFAULT FALSE,
     allow_nsfw BOOLEAN NOT NULL DEFAULT FALSE,
-    --settings JSONB DEFAULT '{}'::jsonb,
+    settings JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -49,14 +49,6 @@ CREATE TABLE user_blocks (
 -- =======================================
 -- Mangás
 -- =======================================
-CREATE TABLE comic_types (
-    id SMALLSERIAL PRIMARY KEY,
-    name VARCHAR(32) UNIQUE NOT NULL,
-    description TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
 CREATE TABLE mangas (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     country_id SMALLINT NOT NULL REFERENCES countries(id),
@@ -65,13 +57,15 @@ CREATE TABLE mangas (
     title_native TEXT NOT NULL,
     release_date DATE NOT NULL,
     finish_date DATE,
-    age_rating VARCHAR(16) NOT NULL CHECK (age_rating IN ('G', 'PG12', 'R15', 'R18')) DEFAULT 'ONGOING',
-    status VARCHAR(16) NOT NULL CHECK (status IN ('ONGOING', 'COMPLETED', 'HIATUS', 'CANCELLED')) DEFAULT 'ONGOING',
-    comic_type_id SMALLINT NOT NULL REFERENCES comic_types(id),
+    age_rating VARCHAR(16) NOT NULL CHECK (age_rating IN ('G', 'PG12', 'R15', 'R18')),
+    status VARCHAR(16) NOT NULL CHECK (status IN ('ONGOING', 'COMPLETED', 'HIATUS', 'CANCELLED')),
+    comic_type TEXT NOT NULL CHECK (comic_type IN ('MANGA', 'DOUJINSHI', 'MANHWA', 'NOVEL', 'ONESHOT')),
     mal_id INTEGER UNIQUE,
     kitsu_id INTEGER UNIQUE,
+    cover_url  TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at TIMESTAMPTZ DEFAULT NULL;
 );
 
 -- Links externos para mangás
@@ -260,7 +254,6 @@ CREATE TABLE attachment_types (
     id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(32) UNIQUE NOT NULL,
     mime_type VARCHAR(64),
-    icon_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

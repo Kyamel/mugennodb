@@ -15,6 +15,7 @@ class EComicType(str, Enum):
     MANHUA = 'MANHUA'
     DOUJINSHI = 'DOUJINSHI'
     NOVEL = 'NOVEL'
+    ONESHOT = "ONESHOT"
 
 class EMangaStatus(str, Enum):
     ONGOING = 'ONGOING'

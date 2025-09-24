@@ -32,7 +32,7 @@ class MangasCreate:
     title_english: str
     title_native: str
     release_date: date
-    comic_type: str  # 'MANGA', 'DOUJINSHI', etc.
+    comic_type: EComicType  # 'MANGA', 'DOUJINSHI', etc.
     cover_url: str
     finish_date: Optional[date] = None
     age_rating: EAgeRating = EAgeRating.G
@@ -50,7 +50,7 @@ class MangasUpdate:
     finish_date: Optional[date] = None
     age_rating: Optional[EAgeRating] = None
     status: Optional[EMangaStatus] = None
-    comic_type: Optional[str] = None
+    comic_type: Optional[EComicType] = None
     mal_id: Optional[int] = None
     kitsu_id: Optional[int] = None
     cover_url: Optional[str] = None

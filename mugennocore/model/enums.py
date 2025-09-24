@@ -35,6 +35,9 @@ class ELinkType(str, Enum):
     COMMUNITY = 'COMMUNITY'
     INFORMATION = 'INFORMATION'
 
+class ESourceType(str, Enum):
+    INDEXER = 'INDEXER'
+
 class EReadingStatus(str, Enum):
     PLANNING = 'PLANNING'
     READING = 'READING'
@@ -51,12 +54,10 @@ class EMangaRelationshipType(str, Enum):
     MAIN_STORY = 'MAIN_STORY'
     PREQUEL = 'PREQUEL'
     SEQUEL = 'SEQUEL'
-    SIDE_STORY = 'SIDE_STORY'
-    SPIN_OFF = 'SPIN_OFF'
+    SPIN_OFF = 'SPINOFF'
     ADAPTATION = 'ADAPTATION'
-    ALTERNATIVE_VERSION = 'ALTERNATIVE_VERSION'
-    CHARACTER = 'CHARACTER'
     OVA = 'OVA'
     SPECIAL = 'SPECIAL'
     ONESHOT = 'ONESHOT'
     DOUJINSHI = 'DOUJINSHI'
+    FANMADE = 'FANMADE'

@@ -1,24 +1,38 @@
-from dataclasses import field
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from pydantic.dataclasses import dataclass
 
+from mugennocore.model.enums import EMangaRelationshipType
 
-@dataclass(slots=True)
-class MangaRelationships:
+@dataclass(slots=True, frozen=True)
+class MangaRelationshipsRead:
     id: UUID
     source_manga_id: UUID
     target_manga_id: UUID
-    relationship_type_id: int
     user_id: UUID
+    relationship_type: EMangaRelationshipType  # 'SEQUEL','PREQUEL','SPINOFF','PARODY','FANMADE'
     description: Optional[str] = None
     is_approved: bool = False
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
 
-    def __str__(self) -> str:
-        return f"MangaRelationships({self.source_manga_id} -> {self.target_manga_id})"
+@dataclass(slots=True, frozen=True)
+class MangaRelationshipsCreate:
+    source_manga_id: UUID
+    target_manga_id: UUID
+    user_id: UUID
+    relationship_type: EMangaRelationshipType  
+    description: Optional[str] = None
+    is_approved: bool = False
 
-    def __repr__(self) -> str:
-        return f"MangaRelationships(id={self.id}, source_manga_id={self.source_manga_id}, target_manga_id={self.target_manga_id}, type_id={self.relationship_type_id})"
+@dataclass(slots=True, frozen=True)
+class MangaRelationshipsUpdate:
+    id: UUID
+    source_manga_id: Optional[UUID] = None
+    target_manga_id: Optional[UUID] = None
+    user_id: Optional[UUID] = None
+    relationship_type: Optional[EMangaRelationshipType] = None
+    description: Optional[str] = None
+    is_approved: Optional[bool] = None
+    updated_at: datetime = field(default_factory=datetime.now)

@@ -21,6 +21,16 @@ async def list_mangas(db: DatabaseProtocol, limit: int = 100, offset: int = 0) -
     return [MangasRead(**dict(r)) for r in rows]
 
 
+async def search_mangas_by_title(db: DatabaseProtocol, title: str, limit: int = 20, offset: int = 0) -> list[MangasRead]:
+    query = """
+        SELECT * FROM mangas
+        WHERE title_english ILIKE $1 AND deleted_at IS NULL
+        ORDER BY created_at DESC
+        LIMIT $2 OFFSET $3
+    """
+    rows = await db.fetch(query, f"%{title}%", limit, offset)
+    return [MangasRead(**dict(r)) for r in rows]
+
 # -------------------- CREATE --------------------
 
 async def create_manga(db: DatabaseProtocol, data: MangasCreate) -> MangasRead:

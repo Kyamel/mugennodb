@@ -1,12 +1,12 @@
 from datetime import datetime, date
 from uuid import UUID, uuid4
-from mugennocore.model.enums import EAgeRating, EMangaStatus
-from mugennocore.model.mangas import Mangas
+from mugennocore.model.enums import EAgeRating, EComicType, EMangaStatus
+from mugennocore.model.mangas import MangasCreate
 from mugennodb.conection.database_protocol import DatabaseProtocol
 from mugennodb.repositories.mangas_repo import (
     get_manga_by_id,
     create_manga,
-    get_mangas_by_title,
+    search_mangas_by_title,
 )
 
 COMMANDS = {
@@ -94,8 +94,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             print("mal_id must be an integer.")
             return
 
-        manga = Mangas(
-            id=uuid4(),
+        manga_create = MangasCreate(
             country_id=1,
             user_id=UUID("00000000-0000-0000-0000-000000000001"),
             title_english=title_english,
@@ -104,13 +103,12 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
             finish_date=date(2014, 11, 10),
             age_rating=EAgeRating.PG12,
             status=EMangaStatus.COMPLETED,
-            comic_type_id=1,
+            comic_type=EComicType.MANGA,
+            cover_url="sla",
             mal_id=mal_id,
             kitsu_id=mal_id,
-            created_at=datetime.now(),
-            updated_at=datetime.now()
         )
-        mid = await create_manga(db, manga)
+        mid = await create_manga(db, manga_create)
         print(f"Mangas inserted with ID {mid}")
 
     elif cmd == "search_manga":
@@ -122,7 +120,7 @@ async def handle_command(db: DatabaseProtocol, parts: list[str]) -> None:
         limit = int(args.get("limit", 10))
         offset = int(args.get("offset", 0))
 
-        mangas = await get_mangas_by_title(db, title, limit, offset)
+        mangas = await search_mangas_by_title(db, title, limit, offset)
         if not mangas:
             print(f"No manga found with the title '{title}'.")
             return

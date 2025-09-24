@@ -1,17 +1,16 @@
-from dataclasses import field
+from dataclasses import dataclass, field
 from datetime import datetime
 from uuid import UUID
-from pydantic.dataclasses import dataclass
 
-
-@dataclass(slots=True)
-class UserFollows:
+@dataclass(slots=True, frozen=True)
+class UserFollowsRead:
     follower_id: UUID
     following_id: UUID
     created_at: datetime = field(default_factory=datetime.now)
 
-    def __str__(self) -> str:
-        return f"UserFollows({self.follower_id} -> {self.following_id})"
+@dataclass(slots=True, frozen=True)
+class UserFollowsCreate:
+    follower_id: UUID
+    following_id: UUID
 
-    def __repr__(self) -> str:
-        return f"UserFollows(follower_id={self.follower_id}, following_id={self.following_id}, created_at={self.created_at})"
+# Como o PK é composto, normalmente não atualizamos o follow, então não precisa de update.
